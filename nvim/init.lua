@@ -19,58 +19,58 @@ end
 
 -- プラグインをインストール
 require("packer").startup(function(use)
-  -- パッケージマネージャ
-  use "wbthomason/packer.nvim"
+    -- パッケージマネージャ
+    use "wbthomason/packer.nvim"
 
-  -- 色々はいってるやつ
-  use "nvim-lua/plenary.nvim"
+    -- 色々はいってるやつ
+    use "nvim-lua/plenary.nvim"
 
-  -- iconとか入っているやつ
-  use "kyazdani42/nvim-web-devicons"
+    -- iconとか入っているやつ
+    use "kyazdani42/nvim-web-devicons"
 
-  -- Lsp関係
-  use "neovim/nvim-lspconfig"
-  use "williamboman/mason.nvim"
-  use "williamboman/mason-lspconfig.nvim"
-  use "chapel-lang/mason-registry"
-  use "j-hui/fidget.nvim"
+    -- Lsp関係
+    use "neovim/nvim-lspconfig"
+    use "williamboman/mason.nvim"
+    use "williamboman/mason-lspconfig.nvim"
+    use "chapel-lang/mason-registry"
+    use "j-hui/fidget.nvim"
 
-  -- 補完関係
-  use "hrsh7th/nvim-cmp"
-  use "hrsh7th/cmp-nvim-lsp"
-  use "hrsh7th/cmp-vsnip"
-  use "hrsh7th/cmp-buffer"
-  use "hrsh7th/cmp-path"
-  use "hrsh7th/vim-vsnip"
+    -- 補完関係
+    use "hrsh7th/nvim-cmp"
+    use "hrsh7th/cmp-nvim-lsp"
+    use "hrsh7th/cmp-vsnip"
+    use "hrsh7th/cmp-buffer"
+    use "hrsh7th/cmp-path"
+    use "hrsh7th/vim-vsnip"
 
-  -- git
-  use "lewis6991/gitsigns.nvim"
+    -- git
+    use "lewis6991/gitsigns.nvim"
 
-  -- null-ls
-  use { "jose-elias-alvarez/null-ls.nvim", requires = { "nvim-lua/plenary.nvim" } }
+    -- null-ls
+    use { "jose-elias-alvarez/null-ls.nvim", requires = { "nvim-lua/plenary.nvim" } }
 
-  -- fuzzyfinder
-  use {"nvim-telescope/telescope.nvim", requires = { {"nvim-lua/plenary.nvim"} }}
-  use {"nvim-telescope/telescope-file-browser.nvim"}
+    -- fuzzyfinder
+    use {"nvim-telescope/telescope.nvim", requires = { {"nvim-lua/plenary.nvim"} }}
+    use {"nvim-telescope/telescope-file-browser.nvim"}
 
-  -- TreeSitter
-  use {"nvim-treesitter/nvim-treesitter", run = ":TSUpdate"}
+    -- TreeSitter
+    use {"nvim-treesitter/nvim-treesitter", run = ":TSUpdate"}
 
-  -- 括弧閉じる
-  use "cohama/lexima.vim"
+    -- 括弧閉じる
+    use "cohama/lexima.vim"
 
-  -- ステータスライン
-  use {"nvim-lualine/lualine.nvim", requires={ "kyazdani42/nvim-web-devicons", opt = true }}
+    -- ステータスライン
+    use {"nvim-lualine/lualine.nvim", requires={ "kyazdani42/nvim-web-devicons", opt = true }}
 
-  -- indent-lineが見えるやつ
-  use "lukas-reineke/indent-blankline.nvim"
+    -- indent-lineが見えるやつ
+    use "lukas-reineke/indent-blankline.nvim"
 
-  -- テーマ
-  use "sainnhe/sonokai"
+    -- テーマ
+    use "sainnhe/sonokai"
 
-  if packer_bootstrap then
-    require("packer").sync()
-  end
+    if packer_bootstrap then
+      require("packer").sync()
+    end
 
 end)
 
