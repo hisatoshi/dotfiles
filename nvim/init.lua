@@ -7,6 +7,8 @@ vim.keymap.set("n", "<space>h", "<C-w>h")
 vim.keymap.set("n", "<space>j", "<C-w>j")
 vim.keymap.set("n", "<space>k", "<C-w>k")
 vim.keymap.set("n", "<space>l", "<C-w>l")
+vim.keymap.set("n", "j", "gj")
+vim.keymap.set("n", "k", "gk")
 
 
 -- packer.nvimを自動でインストール
@@ -176,7 +178,6 @@ cmp.setup {
     sources = cmp.config.sources({
             { name = "nvim_lsp" },
             { name = "vsnip" },
-        }, {
             { name = "path" },
             { name = "buffer" },
     }),
