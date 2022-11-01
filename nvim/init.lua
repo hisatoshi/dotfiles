@@ -3,6 +3,7 @@ vim.opt.number = true
 vim.opt.laststatus = 3
 vim.cmd 'colorscheme sonokai'
 
+
 -- packer.nvimを自動でインストール
 local install_path = vim.fn.stdpath "data" .. "/site/pack/packer/start/packer.nvim"
 local packer_bootstrap = nil
@@ -17,16 +18,11 @@ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
   }
 end
 
+
 -- プラグインをインストール
 require("packer").startup(function(use)
     -- パッケージマネージャ
     use "wbthomason/packer.nvim"
-
-    -- 色々はいってるやつ
-    use "nvim-lua/plenary.nvim"
-
-    -- iconとか入っているやつ
-    use "kyazdani42/nvim-web-devicons"
 
     -- Lsp関係
     use "neovim/nvim-lspconfig"
@@ -68,11 +64,21 @@ require("packer").startup(function(use)
     -- テーマ
     use "sainnhe/sonokai"
 
+    -- かっこよくするやつ
+    use({
+        "folke/noice.nvim",
+        requires = {
+          "MunifTanjim/nui.nvim",
+          "rcarriga/nvim-notify",
+          }
+      })
+
     if packer_bootstrap then
       require("packer").sync()
     end
 
 end)
+
 
 -- LSPクライアントがバッファにアタッチされたときに実行される
 local on_attach = function(client, bufnr)
@@ -107,6 +113,7 @@ lspconfig.pyright.setup {
 lspconfig.rust_analyzer.setup {
 	on_attach = on_attach,
 }
+
 
 -- masonで管理されたLSP以外の設定
 local mason_package = require"mason-core.package"
@@ -188,3 +195,4 @@ require "indent_blankline".setup()
 require "gitsigns".setup()
 require "lualine".setup()
 require "fidget".setup()
+require "noice".setup()
