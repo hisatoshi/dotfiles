@@ -205,6 +205,7 @@ telescope.load_extension "file_browser"
 
 -- その他の設定
 require "nvim-treesitter.configs".setup {
+    ensure_installed = {"python", "vim", "regex", "lua", "bash", "markdown", "markdown_inline", "rust", "help"},
     highlight = {
       enable = true,
       disable = {}
