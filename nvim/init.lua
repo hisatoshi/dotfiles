@@ -8,14 +8,14 @@ vim.cmd 'colorscheme sonokai'
 local install_path = vim.fn.stdpath "data" .. "/site/pack/packer/start/packer.nvim"
 local packer_bootstrap = nil
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
-  packer_bootstrap = vim.fn.system {
-    "git",
-    "clone",
-    "--depth",
-    "1",
-    "https://github.com/wbthomason/packer.nvim",
-    install_path,
-  }
+    packer_bootstrap = vim.fn.system {
+      "git",
+      "clone",
+      "--depth",
+      "1",
+      "https://github.com/wbthomason/packer.nvim",
+      install_path,
+    }
 end
 
 
@@ -68,13 +68,13 @@ require("packer").startup(function(use)
     use({
         "folke/noice.nvim",
         requires = {
-          "MunifTanjim/nui.nvim",
-          "rcarriga/nvim-notify",
-          }
-      })
+            "MunifTanjim/nui.nvim",
+            "rcarriga/nvim-notify",
+        }
+    })
 
     if packer_bootstrap then
-      require("packer").sync()
+        require("packer").sync()
     end
 
 end)
@@ -83,17 +83,17 @@ end)
 -- LSPクライアントがバッファにアタッチされたときに実行される
 local on_attach = function(client, bufnr)
 
-  local set = vim.keymap.set
-  set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>")
-  set("n", "gD", "<cmd>lua vim.lsp.buf.type_definition()<CR>")
-  set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
-  set("n", "<space>rn", "<cmd>lua vim.lsp.buf.rename()<CR>")
-  set("n", "<space>wa", "<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>")
-  set("n", "<space>wr", "<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>")
-  set("n", "<space>wl", "<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>")
-  set("n", "[d", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>")
-  set("n", "]d", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
-  set("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>")
+    local set = vim.keymap.set
+    set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>")
+    set("n", "gD", "<cmd>lua vim.lsp.buf.type_definition()<CR>")
+    set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
+    set("n", "<space>rn", "<cmd>lua vim.lsp.buf.rename()<CR>")
+    set("n", "<space>wa", "<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>")
+    set("n", "<space>wr", "<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>")
+    set("n", "<space>wl", "<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>")
+    set("n", "[d", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>")
+    set("n", "]d", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
+    set("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>")
 end
 
 -- masonで管理されたLSPの設定
@@ -137,7 +137,7 @@ for _, package in ipairs(mason_registry.get_installed_packages()) do
     end
 end
 null_ls.setup ({
-  sources = null_sources
+    sources = null_sources
 })
 
 
@@ -145,24 +145,24 @@ null_ls.setup ({
 vim.opt.completeopt = "menu,menuone,noselect"
 local cmp = require "cmp"
 cmp.setup {
-  snippet = {
-    expand = function(args)
-      vim.fn["vsnip#anonymous"](args.body)
-    end,
-  },
-  mapping = {
-    ["<C-p>"] = cmp.mapping.select_prev_item(),
-    ["<C-n>"] = cmp.mapping.select_next_item(),
-    ["<C-e>"] = cmp.mapping.close(),
-    ["<CR>"] = cmp.mapping.confirm { select = true },
-  },
-  sources = cmp.config.sources({
-        { name = "nvim_lsp" },
-        { name = "vsnip" },
-    }, {
-        { name = "path" },
-        { name = "buffer" },
-  }),
+    snippet = {
+      expand = function(args)
+        vim.fn["vsnip#anonymous"](args.body)
+      end,
+    },
+    mapping = {
+      ["<C-p>"] = cmp.mapping.select_prev_item(),
+      ["<C-n>"] = cmp.mapping.select_next_item(),
+      ["<C-e>"] = cmp.mapping.close(),
+      ["<CR>"] = cmp.mapping.confirm { select = true },
+    },
+    sources = cmp.config.sources({
+            { name = "nvim_lsp" },
+            { name = "vsnip" },
+        }, {
+            { name = "path" },
+            { name = "buffer" },
+    }),
 }
 
 
@@ -186,10 +186,10 @@ telescope.load_extension "file_browser"
 
 -- その他の設定
 require "nvim-treesitter.configs".setup {
-  highlight = {
-    enable = true,
-    disable = {}
-  }
+    highlight = {
+      enable = true,
+      disable = {}
+    }
 }
 require "indent_blankline".setup()
 require "gitsigns".setup()
