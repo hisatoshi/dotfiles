@@ -1,7 +1,12 @@
+vim.cmd 'colorscheme sonokai'
 vim.opt.termguicolors = true
 vim.opt.number = true
+vim.opt.relativenumber = true
 vim.opt.laststatus = 3
-vim.cmd 'colorscheme sonokai'
+vim.keymap.set("n", "<space>h", "<C-w>h")
+vim.keymap.set("n", "<space>j", "<C-w>j")
+vim.keymap.set("n", "<space>k", "<C-w>k")
+vim.keymap.set("n", "<space>l", "<C-w>l")
 
 
 -- packer.nvimを自動でインストール
@@ -99,7 +104,7 @@ end
 -- masonで管理されたLSPの設定
 require("mason").setup()
 require("mason-lspconfig").setup {
-    ensure_installed = {"pyright", "flake8", "black", "rust_analyzer", "sumneko_lua"}
+    ensure_installed = {"pyright", "rust_analyzer", "sumneko_lua"}
 }
 local lspconfig = require "lspconfig"
 lspconfig.pyright.setup {
@@ -176,6 +181,7 @@ cmp.setup {
             { name = "buffer" },
     }),
 }
+
 
 
 -- fuzzy finderの設定
