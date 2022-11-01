@@ -81,7 +81,7 @@ end)
 
 
 -- LSPクライアントがバッファにアタッチされたときに実行される
-local on_attach = function(client, bufnr)
+local on_attach = function(_, _)
 
     local set = vim.keymap.set
     set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>")
@@ -98,7 +98,9 @@ end
 
 -- masonで管理されたLSPの設定
 require("mason").setup()
-require("mason-lspconfig").setup()
+require("mason-lspconfig").setup {
+    ensure_installed = {"pyright", "flake8", "black", "rust_analyzer", "sumneko_lua"}
+}
 local lspconfig = require "lspconfig"
 lspconfig.pyright.setup {
     on_attach = on_attach,
@@ -111,11 +113,21 @@ lspconfig.pyright.setup {
     }
 }
 lspconfig.rust_analyzer.setup {
-	on_attach = on_attach,
+    on_attach = on_attach,
+}
+lspconfig.sumneko_lua.setup {
+    on_attach = on_attach,
+    settings = {
+	Lua = {
+	    diagnostics = {
+		globals = {'vim'},
+	    }
+	}
+    }
 }
 
 
--- masonで管理されたLSP以外の設定
+-- masonで管理されたLSP以外の設定をnull-ls経由で有効化
 local mason_package = require"mason-core.package"
 local mason_registry = require"mason-registry"
 local null_ls = require "null-ls"
