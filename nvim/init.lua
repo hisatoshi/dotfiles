@@ -41,6 +41,7 @@ require("packer").startup(function(use)
     use "chapel-lang/mason-registry"
     use "glepnir/lspsaga.nvim"
     use "j-hui/fidget.nvim" --右下に出すやつ
+    use "kevinhwang91/nvim-bqf"
 
     -- 補完関係
     use "hrsh7th/nvim-cmp"
@@ -201,10 +202,27 @@ vim.keymap.set("n", "<space>e", ":Telescope file_browser<CR>", { noremap = true 
 
 local telescope = require "telescope"
 telescope.setup {
+    defaults = {
+	layout_config = {
+	    -- vertical = {width = 2.0}
+	}
+    },
     extensions = {
         file_browser = {
             hijak_netrw = true
 	}
+    },
+    pickers = {
+	find_files = {
+	    theme = "dropdown"
+	},
+	live_grep = {
+	    theme = "dropdown"
+	},
+	buffers = {
+	    theme = "dropdown"
+	}
+
     }
 }
 telescope.load_extension "file_browser"
