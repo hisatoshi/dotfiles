@@ -16,12 +16,12 @@ local install_path = vim.fn.stdpath "data" .. "/site/pack/packer/start/packer.nv
 local packer_bootstrap = nil
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
     packer_bootstrap = vim.fn.system {
-      "git",
-      "clone",
-      "--depth",
-      "1",
-      "https://github.com/wbthomason/packer.nvim",
-      install_path,
+        "git",
+        "clone",
+        "--depth",
+        "1",
+        "https://github.com/wbthomason/packer.nvim",
+        install_path,
     }
 end
 
@@ -30,6 +30,9 @@ end
 require("packer").startup(function(use)
     -- パッケージマネージャ
     use "wbthomason/packer.nvim"
+
+    -- iconを追加
+    use "nvim-tree/nvim-web-devicons"
 
     -- Lsp関係
     use "neovim/nvim-lspconfig"
@@ -45,6 +48,7 @@ require("packer").startup(function(use)
     use "hrsh7th/cmp-buffer"
     use "hrsh7th/cmp-path"
     use "hrsh7th/vim-vsnip"
+    use "onsails/lspkind.nvim"
 
     -- git
     use "lewis6991/gitsigns.nvim"
@@ -59,11 +63,11 @@ require("packer").startup(function(use)
     -- TreeSitter
     use {"nvim-treesitter/nvim-treesitter", run = ":TSUpdate"}
 
-    -- 括弧閉じる
-    use "cohama/lexima.vim"
+    -- 括弧を自動で閉じる
+    use "windwp/nvim-autopairs"
 
     -- ステータスライン
-    use {"nvim-lualine/lualine.nvim", requires={ "kyazdani42/nvim-web-devicons", opt = true }}
+    use {"nvim-lualine/lualine.nvim", requires={ "nvim-tree/nvim-web-devicons", opt = true }}
 
     -- indent-lineが見えるやつ
     use "lukas-reineke/indent-blankline.nvim"
@@ -163,6 +167,7 @@ null_ls.setup ({
 -- 補完の設定
 vim.opt.completeopt = "menu,menuone,noselect"
 local cmp = require "cmp"
+local lspkind = require "lspkind"
 cmp.setup {
     snippet = {
       expand = function(args)
@@ -181,6 +186,13 @@ cmp.setup {
             { name = "path" },
             { name = "buffer" },
     }),
+    formatting = {
+        format = lspkind.cmp_format({
+              mode = 'symbol',
+              maxwidth = 50,
+              ellipsis_char = '...',
+        })
+    }
 }
 
 
@@ -204,13 +216,18 @@ telescope.load_extension "file_browser"
 
 
 -- その他の設定
+require "nvim-web-devicons".setup {
+    color_icons = true,
+    default = true
+}
 require "nvim-treesitter.configs".setup {
     ensure_installed = {"python", "vim", "regex", "lua", "bash", "markdown", "markdown_inline", "rust", "help"},
     highlight = {
       enable = true,
       disable = {}
-    }
+    },
 }
+require "nvim-autopairs".setup()
 require "indent_blankline".setup()
 require "gitsigns".setup()
 require "lualine".setup()
