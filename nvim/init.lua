@@ -39,7 +39,8 @@ require("packer").startup(function(use)
     use "williamboman/mason.nvim"
     use "williamboman/mason-lspconfig.nvim"
     use "chapel-lang/mason-registry"
-    use "j-hui/fidget.nvim"
+    use "glepnir/lspsaga.nvim"
+    use "j-hui/fidget.nvim" --右下に出すやつ
 
     -- 補完関係
     use "hrsh7th/nvim-cmp"
@@ -76,13 +77,8 @@ require("packer").startup(function(use)
     use "sainnhe/sonokai"
 
     -- かっこよくするやつ
-    use({
-        "folke/noice.nvim",
-        requires = {
-            "MunifTanjim/nui.nvim",
-            "rcarriga/nvim-notify",
-        }
-    })
+    use({ "folke/noice.nvim", requires = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify", } })
+
 
     if packer_bootstrap then
         require("packer").sync()
@@ -91,20 +87,19 @@ require("packer").startup(function(use)
 end)
 
 
+local saga = require "lspsaga"
+saga.init_lsp_saga({})
+
 -- LSPクライアントがバッファにアタッチされたときに実行される
 local on_attach = function(_, _)
 
     local set = vim.keymap.set
-    set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>")
-    set("n", "gD", "<cmd>lua vim.lsp.buf.type_definition()<CR>")
-    set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
-    set("n", "<space>rn", "<cmd>lua vim.lsp.buf.rename()<CR>")
-    set("n", "<space>wa", "<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>")
-    set("n", "<space>wr", "<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>")
-    set("n", "<space>wl", "<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>")
     set("n", "[d", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>")
     set("n", "]d", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
-    set("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>")
+    set("n", "K", "<cmd>Lspsaga hover_doc<CR>")
+    set("n", "<space>rn", "<cmd>Lspsaga rename<CR>")
+    set("n", "gd", "<cmd>Lspsaga peek_definition<CR>")
+    set("n", "gr", "<cmd>Lspsaga lsp_finder<CR>")
 end
 
 -- masonで管理されたLSPの設定
