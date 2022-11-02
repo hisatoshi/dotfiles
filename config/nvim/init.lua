@@ -1,8 +1,11 @@
-vim.cmd 'colorscheme sonokai'
 vim.opt.termguicolors = true
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.laststatus = 3
+vim.opt.tabstop=4
+vim.opt.shiftwidth=4
+vim.opt.expandtab = true
+vim.cmd 'colorscheme sonokai'
 vim.keymap.set("n", "<space>h", "<C-w>h")
 vim.keymap.set("n", "<space>j", "<C-w>j")
 vim.keymap.set("n", "<space>k", "<C-w>k")
@@ -113,9 +116,9 @@ lspconfig.pyright.setup {
     on_attach = on_attach,
     settings = {
         python = {
-	    analysis = {
+            analysis = {
                 typeCheckingMode = "basic"
-	    }
+            }
         }
     }
 }
@@ -125,11 +128,11 @@ lspconfig.rust_analyzer.setup {
 lspconfig.sumneko_lua.setup {
     on_attach = on_attach,
     settings = {
-	Lua = {
-	    diagnostics = {
-		globals = {'vim'},
-	    }
-	}
+        Lua = {
+            diagnostics = {
+                globals = {'vim'},
+            }
+        }
     }
 }
 
@@ -145,14 +148,14 @@ for _, package in ipairs(mason_registry.get_installed_packages()) do
         table.insert(null_sources, null_ls.builtins.formatting[package.name])
     end
     if package_categories == mason_package.Cat.Linter then
-	-- flake8にline_too_longを無視する設定を追加
-	if package.name == "flake8" then
+        -- flake8にline_too_longを無視する設定を追加
+        if package.name == "flake8" then
             table.insert(null_sources, null_ls.builtins.diagnostics.flake8.with({
                 extra_args = {"--ignore=E501"}
             }))
-	else
-	    table.insert(null_sources, null_ls.builtins.diagnostics[package.name])
-	end
+        else
+            table.insert(null_sources, null_ls.builtins.diagnostics[package.name])
+        end
     end
 end
 null_ls.setup ({
@@ -166,15 +169,15 @@ local cmp = require "cmp"
 local lspkind = require "lspkind"
 cmp.setup {
     snippet = {
-      expand = function(args)
-        vim.fn["vsnip#anonymous"](args.body)
-      end,
+        expand = function(args)
+            vim.fn["vsnip#anonymous"](args.body)
+        end,
     },
     mapping = {
-      ["<C-p>"] = cmp.mapping.select_prev_item(),
-      ["<C-n>"] = cmp.mapping.select_next_item(),
-      ["<C-e>"] = cmp.mapping.close(),
-      ["<CR>"] = cmp.mapping.confirm { select = true },
+        ["<C-p>"] = cmp.mapping.select_prev_item(),
+        ["<C-n>"] = cmp.mapping.select_next_item(),
+        ["<C-e>"] = cmp.mapping.close(),
+        ["<CR>"] = cmp.mapping.confirm { select = true },
     },
     sources = cmp.config.sources({
             { name = "nvim_lsp" },
@@ -192,7 +195,6 @@ cmp.setup {
 }
 
 
-
 -- fuzzy finderの設定
 local builtin = require "telescope.builtin"
 vim.keymap.set("n", "<space>ff", builtin.find_files, {})
@@ -201,27 +203,30 @@ vim.keymap.set("n", "<space>fb", builtin.buffers, {})
 vim.keymap.set("n", "<space>e", ":Telescope file_browser<CR>", { noremap = true })
 
 local telescope = require "telescope"
+local actions = require "telescope.actions"
 telescope.setup {
     defaults = {
-	layout_config = {
-	    -- vertical = {width = 2.0}
-	}
+    layout_config = {
+        -- vertical = {width = 2.0}
+    },
+        mappings = {
+        }
     },
     extensions = {
         file_browser = {
             hijak_netrw = true
-	}
+    }
     },
     pickers = {
-	find_files = {
-	    theme = "dropdown"
-	},
-	live_grep = {
-	    theme = "dropdown"
-	},
-	buffers = {
-	    theme = "dropdown"
-	}
+    find_files = {
+        theme = "dropdown"
+    },
+    live_grep = {
+        theme = "dropdown"
+    },
+    buffers = {
+        theme = "dropdown"
+    }
 
     }
 }
