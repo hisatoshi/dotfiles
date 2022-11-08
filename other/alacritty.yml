@@ -1,0 +1,36 @@
+window:
+  decorations: full
+  startup_mode: Windowed
+  opacity: 0.9
+
+scrolling:
+  history: 10000
+  multiplier: 3
+
+font:
+  normal:
+    family: "HackGen Console NF"
+
+  bold:
+    family: "HackGen Console NF"
+    style: Bold
+  italic:
+    family: "HackGen Console NF"
+    style: italic
+  size: 13.0
+
+
+selection:
+  semantic_escape_chars: ",│`|:\"' ()[]{}<>\t"
+  save_to_clipboard: true
+
+cursor:
+  style:
+    shape: Block
+    blinking: Off
+
+shell:
+  program: 'C:\Windows\system32\wsl.exe'
+mouse_bindings:
+  - { mouse: Middle, action: PasteSelection }
+
