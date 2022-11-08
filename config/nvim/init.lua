@@ -91,7 +91,7 @@ require("packer").startup(function(use)
     use({ "folke/noice.nvim", requires = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify", } })
 
     -- filer
-    vim.cmd([[ let g:neo_tree_remove_legacy_commands = 1]])
+    vim.g.tree_remove_legacy_commands = 1
     use { "nvim-neo-tree/neo-tree.nvim", branch = "v2.x", requires = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim"}}
 
     -- 飛ぶやつ
@@ -261,6 +261,7 @@ require "nvim-web-devicons".setup {
     color_icons = true,
     default = true
 }
+
 require "nvim-treesitter.configs".setup {
     ensure_installed = {"python", "vim", "regex", "lua", "bash", "markdown", "markdown_inline", "rust", "help"},
     highlight = {
