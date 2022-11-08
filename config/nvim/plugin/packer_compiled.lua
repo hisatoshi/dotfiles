@@ -139,6 +139,11 @@ _G.packer_plugins = {
     path = "/home/zoe/.local/share/nvim/site/pack/packer/start/mason.nvim",
     url = "https://github.com/williamboman/mason.nvim"
   },
+  ["neo-tree.nvim"] = {
+    loaded = true,
+    path = "/home/zoe/.local/share/nvim/site/pack/packer/start/neo-tree.nvim",
+    url = "https://github.com/nvim-neo-tree/neo-tree.nvim"
+  },
   ["noice.nvim"] = {
     loaded = true,
     path = "/home/zoe/.local/share/nvim/site/pack/packer/start/noice.nvim",
@@ -203,11 +208,6 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/zoe/.local/share/nvim/site/pack/packer/start/sonokai",
     url = "https://github.com/sainnhe/sonokai"
-  },
-  ["telescope-file-browser.nvim"] = {
-    loaded = true,
-    path = "/home/zoe/.local/share/nvim/site/pack/packer/start/telescope-file-browser.nvim",
-    url = "https://github.com/nvim-telescope/telescope-file-browser.nvim"
   },
   ["telescope.nvim"] = {
     loaded = true,

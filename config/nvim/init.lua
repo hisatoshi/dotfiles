@@ -63,7 +63,6 @@ require("packer").startup(function(use)
 
     -- fuzzyfinder
     use {"nvim-telescope/telescope.nvim", requires = { {"nvim-lua/plenary.nvim"} }}
-    use {"nvim-telescope/telescope-file-browser.nvim"}
 
     -- TreeSitter
     use {"nvim-treesitter/nvim-treesitter", run = ":TSUpdate"}
@@ -82,6 +81,10 @@ require("packer").startup(function(use)
 
     -- かっこよくするやつ
     use({ "folke/noice.nvim", requires = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify", } })
+
+    -- filer
+    vim.cmd([[ let g:neo_tree_remove_legacy_commands = 1]])
+    use { "nvim-neo-tree/neo-tree.nvim", branch = "v2.x", requires = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim"}}
 
 
     if packer_bootstrap then
@@ -201,39 +204,45 @@ vim.keymap.set("n", "<space>ff", builtin.find_files, {})
 vim.keymap.set("n", "<space>fw", builtin.live_grep, {})
 vim.keymap.set("n", "<space>fb", builtin.buffers, {})
 vim.keymap.set("n", "<space>e", ":Telescope file_browser<CR>", { noremap = true })
-
 local telescope = require "telescope"
-local actions = require "telescope.actions"
 telescope.setup {
     defaults = {
-    layout_config = {
-        -- vertical = {width = 2.0}
+        pickers = {
+        },
+        prompt_prefix = "   ",
+        selection_caret = "  ",
+        entry_prefix = "  ",
+        initial_mode = "insert",
+        selection_strategy = "reset",
+        sorting_strategy = "ascending",
+        layout_strategy = "horizontal",
+        layout_config = {
+          horizontal = {
+            prompt_position = "top",
+            preview_width = 0.55,
+            results_width = 0.8,
+          },
+          vertical = {
+            mirror = false,
+          },
+          width = 0.87,
+          height = 0.80,
+          preview_cutoff = 120,
+        },
     },
-        mappings = {
-        }
-    },
-    extensions = {
-        file_browser = {
-            hijak_netrw = true
-    }
-    },
-    pickers = {
-    find_files = {
-        theme = "dropdown"
-    },
-    live_grep = {
-        theme = "dropdown"
-    },
-    buffers = {
-        theme = "dropdown"
-    }
-
-    }
 }
-telescope.load_extension "file_browser"
 
 
 -- その他の設定
+vim.keymap.set("n", "<space>e", ":Neotree float<CR>")
+require "neo-tree".setup {
+    filesystem = {
+        filtered_items = {
+            hide_dotfiles = false,
+        }
+    }
+}
+
 require "nvim-web-devicons".setup {
     color_icons = true,
     default = true
