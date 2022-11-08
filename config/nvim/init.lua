@@ -86,6 +86,8 @@ require("packer").startup(function(use)
     vim.cmd([[ let g:neo_tree_remove_legacy_commands = 1]])
     use { "nvim-neo-tree/neo-tree.nvim", branch = "v2.x", requires = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim"}}
 
+    -- 飛ぶやつ
+    use { "phaazon/hop.nvim", branch = "v2"}
 
     if packer_bootstrap then
         require("packer").sync()
@@ -232,6 +234,11 @@ telescope.setup {
     },
 }
 
+local hop = require"hop"
+hop.setup { keys = "etovxqpdygfblzhckisuran"}
+local directions = require('hop.hint').HintDirection
+vim.keymap.set('', 'f', function() hop.hint_char2({ hint_offset = 2}) end, {remap=true})
+
 
 -- その他の設定
 vim.keymap.set("n", "<space>e", ":Neotree float<CR>")
@@ -254,6 +261,8 @@ require "nvim-treesitter.configs".setup {
       disable = {}
     },
 }
+
+
 require "nvim-autopairs".setup()
 require "indent_blankline".setup()
 require "gitsigns".setup()
