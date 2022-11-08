@@ -1,3 +1,9 @@
+-- color scheme
+vim.g.sonokai_style = "atlantis"
+vim.cmd "colorscheme sonokai"
+
+
+-- 見た目の調整
 vim.opt.termguicolors = true
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -5,7 +11,9 @@ vim.opt.laststatus = 3
 vim.opt.tabstop=4
 vim.opt.shiftwidth=4
 vim.opt.expandtab = true
-vim.cmd 'colorscheme sonokai'
+
+
+-- 必須のキーマップ
 vim.keymap.set("n", "<space>h", "<C-w>h")
 vim.keymap.set("n", "<space>j", "<C-w>j")
 vim.keymap.set("n", "<space>k", "<C-w>k")
