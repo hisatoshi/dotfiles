@@ -115,8 +115,8 @@ local on_attach = function(_, _)
     set("n", "]d", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
     set("n", "K", "<cmd>Lspsaga hover_doc<CR>")
     set("n", "<space>rn", "<cmd>Lspsaga rename<CR>")
-    set("n", "gd", "<cmd>Lspsaga peek_definition<CR>")
-    set("n", "gr", "<cmd>Lspsaga lsp_finder<CR>")
+    set("n", "<space>g", "<cmd>Lspsaga peek_definition<CR>")
+    set("n", "<space>r", "<cmd>Lspsaga lsp_finder<CR>")
 end
 
 -- masonで管理されたLSPの設定
@@ -244,7 +244,6 @@ telescope.setup {
 
 local hop = require"hop"
 hop.setup { keys = "etovxqpdygfblzhckisuran"}
-local directions = require('hop.hint').HintDirection
 vim.keymap.set('', 'f', function() hop.hint_char2({ hint_offset = 2}) end, {remap=true})
 
 
