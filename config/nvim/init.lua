@@ -1,5 +1,6 @@
 -- color scheme
 vim.g.sonokai_style = "atlantis"
+vim.g.sonokai_disable_italic_comment = "1"
 vim.cmd "colorscheme sonokai"
 
 
@@ -253,6 +254,8 @@ require "neo-tree".setup {
     filesystem = {
         filtered_items = {
             hide_dotfiles = false,
+            hide_gitignored = true,
+            hide_hidden = false,
         }
     }
 }
