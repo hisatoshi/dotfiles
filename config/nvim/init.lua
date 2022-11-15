@@ -1,7 +1,7 @@
--- color scheme
-vim.g.sonokai_style = "atlantis"
-vim.g.sonokai_disable_italic_comment = "1"
-vim.cmd "colorscheme sonokai"
+-- color scheme--
+-- vim.g.sonokai_style = "atlantis"
+-- vim.g.sonokai_disable_italic_comment = "1"
+vim.cmd "colorscheme catppuccin-frappe"
 
 
 -- 見た目の調整
@@ -86,7 +86,8 @@ require("packer").startup(function(use)
     use "lukas-reineke/indent-blankline.nvim"
 
     -- テーマ
-    use "sainnhe/sonokai"
+    -- use "sainnhe/sonokai"
+    use { "catppuccin/nvim", as = "catppuccin" }
 
     -- かっこよくするやつ
     use({ "folke/noice.nvim", requires = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify", } })
