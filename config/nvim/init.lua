@@ -1,9 +1,3 @@
--- color scheme--
--- vim.g.sonokai_style = "atlantis"
--- vim.g.sonokai_disable_italic_comment = "1"
-vim.cmd "colorscheme catppuccin-frappe"
-
-
 -- 見た目の調整
 vim.opt.termguicolors = true
 vim.opt.number = true
@@ -274,6 +268,10 @@ require "nvim-treesitter.configs".setup {
     },
 }
 
+require "catppuccin".setup {
+    no_italic = true,
+}
+
 
 require "nvim-autopairs".setup()
 require "indent_blankline".setup()
@@ -281,3 +279,7 @@ require "gitsigns".setup()
 require "lualine".setup()
 require "fidget".setup()
 require "noice".setup()
+--
+--
+-- color scheme--
+vim.cmd "colorscheme catppuccin-frappe"
