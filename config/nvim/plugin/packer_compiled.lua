@@ -149,6 +149,11 @@ _G.packer_plugins = {
     path = "/home/zoe/.local/share/nvim/site/pack/packer/start/mason.nvim",
     url = "https://github.com/williamboman/mason.nvim"
   },
+  ["memolist.vim"] = {
+    loaded = true,
+    path = "/home/zoe/.local/share/nvim/site/pack/packer/start/memolist.vim",
+    url = "https://github.com/glidenote/memolist.vim"
+  },
   ["neo-tree.nvim"] = {
     loaded = true,
     path = "/home/zoe/.local/share/nvim/site/pack/packer/start/neo-tree.nvim",

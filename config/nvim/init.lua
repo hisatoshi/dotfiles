@@ -93,6 +93,9 @@ require("packer").startup(function(use)
     -- 飛ぶやつ
     use { "phaazon/hop.nvim", branch = "v2"}
 
+    -- メモるやつ
+    use "glidenote/memolist.vim"
+
     if packer_bootstrap then
         require("packer").sync()
     end
