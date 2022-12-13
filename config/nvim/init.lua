@@ -6,6 +6,7 @@ vim.opt.laststatus = 3
 vim.opt.tabstop=4
 vim.opt.shiftwidth=4
 vim.opt.expandtab = true
+vim.wo.signcolumn="number"
 
 
 -- 必須のキーマップ
