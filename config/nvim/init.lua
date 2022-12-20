@@ -114,6 +114,7 @@ local on_attach = function(_, _)
     set("n", "[d", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>")
     set("n", "]d", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
     set("n", "K", "<cmd>Lspsaga hover_doc<CR>")
+    set("n", "<space>k", "<cmd>Lspsaga show_line_diagnostics<CR>")
     set("n", "<space>rn", "<cmd>Lspsaga rename<CR>")
     set("n", "<space>g", "<cmd>Lspsaga peek_definition<CR>")
     set("n", "<space>r", "<cmd>Lspsaga lsp_finder<CR>")
@@ -213,7 +214,6 @@ local builtin = require "telescope.builtin"
 vim.keymap.set("n", "<space>ff", builtin.find_files, {})
 vim.keymap.set("n", "<space>fw", builtin.live_grep, {})
 vim.keymap.set("n", "<space>fb", builtin.buffers, {})
-vim.keymap.set("n", "<space>e", ":Telescope file_browser<CR>", { noremap = true })
 local telescope = require "telescope"
 telescope.setup {
     defaults = {
