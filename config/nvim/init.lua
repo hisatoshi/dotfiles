@@ -97,6 +97,9 @@ require("packer").startup(function(use)
     -- メモるやつ
     use "glidenote/memolist.vim"
 
+    -- エラー出るやつ
+    use { "folke/trouble.nvim", requires = "nvim-tree/nvim-web-devicons"}
+
     -- Markdownのpreviwer
     -- use "previm/previm"
 
@@ -286,7 +289,7 @@ require "gitsigns".setup()
 require "lualine".setup()
 require "fidget".setup()
 require "noice".setup()
-
+require "trouble".setup()
 
 -- color scheme--
 vim.cmd "colorscheme catppuccin-frappe"
