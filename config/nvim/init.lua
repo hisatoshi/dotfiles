@@ -97,6 +97,9 @@ require("packer").startup(function(use)
     -- メモるやつ
     use "glidenote/memolist.vim"
 
+    -- Markdownのpreviwer
+    -- use "previm/previm"
+
     if packer_bootstrap then
         require("packer").sync()
     end
@@ -267,8 +270,8 @@ require "nvim-web-devicons".setup {
 require "nvim-treesitter.configs".setup {
     ensure_installed = {"python", "vim", "regex", "lua", "bash", "markdown", "markdown_inline", "rust", "help"},
     highlight = {
-      enable = true,
-      disable = {}
+        enable = true,
+        disable = {}
     },
 }
 
@@ -283,7 +286,7 @@ require "gitsigns".setup()
 require "lualine".setup()
 require "fidget".setup()
 require "noice".setup()
---
---
+
+
 -- color scheme--
 vim.cmd "colorscheme catppuccin-frappe"
