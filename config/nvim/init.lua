@@ -178,8 +178,14 @@ for _, package in ipairs(mason_registry.get_installed_packages()) do
         end
     end
 end
+
 null_ls.setup ({
-    sources = null_sources
+    sources = null_sources,
+    on_attach = function(client, _)
+        if client.supports_method("textDocument/formatting") then
+            vim.keymap.set("n", "<space>q", vim.lsp.buf.format)
+        end
+    end,
 })
 
 
