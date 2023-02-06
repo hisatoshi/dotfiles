@@ -103,6 +103,10 @@ require("packer").startup(function(use)
     -- lspの色
     use "folke/lsp-colors.nvim"
 
+
+    -- scroll-bar
+    use "petertriho/nvim-scrollbar"
+
     if packer_bootstrap then
         require("packer").sync()
     end
@@ -285,7 +289,7 @@ require "catppuccin".setup {
     no_italic = true,
 }
 
-
+require("scrollbar").setup()
 require "nvim-autopairs".setup()
 require "indent_blankline".setup()
 require "gitsigns".setup()
