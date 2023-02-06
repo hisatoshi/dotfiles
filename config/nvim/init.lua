@@ -100,8 +100,8 @@ require("packer").startup(function(use)
     -- エラー出るやつ
     use { "folke/trouble.nvim", requires = "nvim-tree/nvim-web-devicons"}
 
-    -- Markdownのpreviwer
-    -- use "previm/previm"
+    -- lspの色
+    use "folke/lsp-colors.nvim"
 
     if packer_bootstrap then
         require("packer").sync()
@@ -109,9 +109,6 @@ require("packer").startup(function(use)
 
 end)
 
-
-local saga = require "lspsaga"
-saga.init_lsp_saga({})
 
 -- LSPクライアントがバッファにアタッチされたときに実行される
 local on_attach = function(_, _)
@@ -296,6 +293,7 @@ require "lualine".setup()
 require "fidget".setup()
 require "noice".setup()
 require "trouble".setup()
+require "lsp-colors".setup()
 
 -- color scheme--
 vim.cmd "colorscheme catppuccin-frappe"
