@@ -116,7 +116,8 @@ end)
 
 -- LSPクライアントがバッファにアタッチされたときに実行される
 local on_attach = function(_, _)
-
+    require "lspsaga".setup()
+        
     local set = vim.keymap.set
     set("n", "[d", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>")
     set("n", "]d", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
