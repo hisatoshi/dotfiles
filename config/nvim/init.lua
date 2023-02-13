@@ -72,7 +72,13 @@ require("packer").startup(function(use)
     use {"nvim-treesitter/nvim-treesitter", run = ":TSUpdate"}
 
     -- 括弧を自動で閉じる
-    use "windwp/nvim-autopairs"
+    use {
+        "altermo/ultimate-autopair.nvim",
+        event={"InsertEnter", "CmdlineEnter"},
+        config=function()
+            require("ultimate-autopair").setup({})
+        end
+    }
 
     -- ステータスライン
     use {"nvim-lualine/lualine.nvim", requires={ "nvim-tree/nvim-web-devicons", opt = true }}
@@ -291,7 +297,6 @@ require "catppuccin".setup {
 }
 
 require("scrollbar").setup()
-require "nvim-autopairs".setup()
 require "indent_blankline".setup()
 require "gitsigns".setup()
 require "lualine".setup()
