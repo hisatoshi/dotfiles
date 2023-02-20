@@ -1,0 +1,28 @@
+add_newline = false
+command_timeout = 10000
+
+# [directory]
+# truncation_length = 10
+# truncate_to_repo = false
+
+[time]
+disabled = false
+
+[line_break]
+disable = true
+
+[aws]
+format = ""
+
+[git_status]
+conflicted = "<c>,"
+ahead = "↑×${count}, "
+behind = "↓×${count}, "
+untracked = "untracked×${count}, "
+stashed = "<stashed>, "
+modified = "modified×${count}, "
+staged = "staged×${count}, "
+renamed = "renamed×${count}, "
+deleted = "deleted×${count}, "
+# style = "bright-white"
+format = "$all_status$ahead_behind"
