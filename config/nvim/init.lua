@@ -123,7 +123,6 @@ end)
 -- LSPクライアントがバッファにアタッチされたときに実行される
 local on_attach = function(_, _)
     require "lspsaga".setup()
-        
     local set = vim.keymap.set
     set("n", "[d", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>")
     set("n", "]d", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
@@ -147,7 +146,7 @@ lspconfig.pyright.setup {
             analysis = {
                 typeCheckingMode = "basic"
             }
-        }
+        },
     }
 }
 lspconfig.rust_analyzer.setup {
@@ -191,7 +190,10 @@ null_ls.setup ({
     sources = null_sources,
     on_attach = function(client, _)
         if client.supports_method("textDocument/formatting") then
-            vim.keymap.set("n", "<space>q", vim.lsp.buf.format)
+            vim.keymap.set("n", "<space>q", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end)
+            -- 他の書き方を残しておく
+            -- vim.keymap.set("n", "<space>q", vim.lsp.buf.format)
+            -- vim.cmd('map <space>q :lua vim.lsp.buf.format({ timeout_ms =  2000 })<CR>')
         end
     end,
 })
