@@ -80,6 +80,14 @@ require("packer").startup(function(use)
         end
     }
 
+    -- surround
+    use {
+        "kylechui/nvim-surround",
+        tag = "*",
+        config = function()
+            require("nvim-surround").setup({}) end
+    }
+
     -- ステータスライン
     use {"nvim-lualine/lualine.nvim", requires={ "nvim-tree/nvim-web-devicons", opt = true }}
 
