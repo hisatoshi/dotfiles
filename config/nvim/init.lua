@@ -1,11 +1,12 @@
 -- 見た目の調整
 vim.opt.termguicolors = true
 vim.opt.number = true
-vim.opt.relativenumber = true
+vim.opt.swapfile = false
 vim.opt.laststatus = 3
 vim.opt.tabstop=4
 vim.opt.shiftwidth=4
 vim.opt.expandtab = true
+vim.opt.winblend = 5
 vim.wo.signcolumn="number"
 
 
@@ -249,6 +250,7 @@ telescope.setup {
     defaults = {
         pickers = {
         },
+        winblend = 4,
         prompt_prefix = "   ",
         selection_caret = "  ",
         entry_prefix = "  ",
