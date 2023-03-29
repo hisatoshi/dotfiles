@@ -307,11 +307,17 @@ require "nvim-treesitter.configs".setup {
 require "catppuccin".setup {
     no_italic = true,
 }
-
+require('lualine').setup{
+    options = {
+      globalstatus = true
+    },
+    sections = {
+      lualine_c = {{'filename', path = 1}}
+    }
+}
 require("scrollbar").setup()
 require "indent_blankline".setup()
 require "gitsigns".setup()
-require "lualine".setup()
 require "fidget".setup()
 require "noice".setup()
 require "trouble".setup()
