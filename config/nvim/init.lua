@@ -203,7 +203,7 @@ for _, package in ipairs(mason_registry.get_installed_packages()) do
         -- flake8にline_too_longを無視する設定を追加
         if package.name == "flake8" then
             table.insert(null_sources, null_ls.builtins.diagnostics.flake8.with({
-                extra_args = {"--ignore=E501"}
+                extra_args = {"--ignore=E501,W504"}
             }))
         else
             table.insert(null_sources, null_ls.builtins.diagnostics[package.name])
@@ -301,8 +301,15 @@ require "neo-tree".setup {
     filesystem = {
         filtered_items = {
             hide_dotfiles = false,
-            hide_gitignored = true,
+            hide_gitignored = false,
             hide_hidden = false,
+            hide_by_name = {
+                ".git",
+                ".gitlab",
+                ".vscode",
+                ".pytest_cache",
+                "__pycache__",
+            }
         }
     }
 }
