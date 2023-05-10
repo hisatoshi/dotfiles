@@ -338,11 +338,30 @@ require('lualine').setup{
       lualine_c = {{'filename', path = 1}}
     }
 }
+
+require("noice").setup({
+    routes = {
+        {
+            filter = {
+                event = "msg_show",
+                kind = "",
+                find = "written"
+            },
+            opts = {skip = true},
+        }
+    },
+    presets = {
+        command_palette = true,
+        long_message_to_split = true,
+        inc_rename = false,
+        lsp_doc_border = false,
+    },
+})
+
 require("scrollbar").setup()
 require "indent_blankline".setup()
 require "gitsigns".setup()
 require "fidget".setup()
-require "noice".setup()
 require "trouble".setup()
 require "lsp-colors".setup()
 
