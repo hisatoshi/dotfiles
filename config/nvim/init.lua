@@ -203,7 +203,7 @@ for _, package in ipairs(mason_registry.get_installed_packages()) do
         -- flake8にline_too_longを無視する設定を追加
         if package.name == "flake8" then
             table.insert(null_sources, null_ls.builtins.diagnostics.flake8.with({
-                extra_args = {"--ignore=E501,W504"}
+                extra_args = {"--ignore=E501,W503,W504"}
             }))
         else
             table.insert(null_sources, null_ls.builtins.diagnostics[package.name])
@@ -262,8 +262,17 @@ vim.keymap.set("n", "<space>ff", builtin.find_files, {})
 vim.keymap.set("n", "<space>fw", builtin.live_grep, {})
 vim.keymap.set("n", "<space>fb", builtin.buffers, {})
 local telescope = require "telescope"
+local telescope_actions = require "telescope.actions"
 telescope.setup {
     defaults = {
+        mappings = {
+            n = {
+                ["<C-f>"] = telescope_actions.send_to_qflist + telescope_actions.open_qflist,
+            },
+            i = {
+                ["<C-f>"] = telescope_actions.send_to_qflist + telescope_actions.open_qflist,
+            }
+        },
         pickers = {
         },
         winblend = 4,
