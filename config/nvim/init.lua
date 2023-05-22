@@ -89,13 +89,7 @@ require("packer").startup(function(use)
     use {"nvim-treesitter/nvim-treesitter", run = ":TSUpdate"}
 
     -- 括弧を自動で閉じる
-    use {
-        "altermo/ultimate-autopair.nvim",
-        event={"InsertEnter", "CmdlineEnter"},
-        config=function()
-            require("ultimate-autopair").setup({})
-        end
-    }
+    
 
     -- surround
     use {
@@ -330,6 +324,7 @@ require "nvim-web-devicons".setup {
 
 require "nvim-treesitter.configs".setup {
     ensure_installed = {"python", "vim", "regex", "lua", "bash", "markdown", "markdown_inline", "rust", "help"},
+    ignore_install = {"help"},
     highlight = {
         enable = true,
         disable = {}
