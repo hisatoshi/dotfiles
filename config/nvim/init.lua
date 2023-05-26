@@ -329,7 +329,7 @@ require "nvim-web-devicons".setup {
 }
 
 require "nvim-treesitter.configs".setup {
-    ensure_installed = {"python", "vim", "regex", "lua", "bash", "markdown", "markdown_inline", "rust", "help"},
+    ensure_installed = {"python", "vim", "regex", "lua", "bash", "markdown", "markdown_inline", "rust"},
     highlight = {
         enable = true,
         disable = {}
