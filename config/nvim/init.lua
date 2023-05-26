@@ -88,15 +88,6 @@ require("packer").startup(function(use)
     -- TreeSitter
     use {"nvim-treesitter/nvim-treesitter", run = ":TSUpdate"}
 
-    -- 括弧を自動で閉じる
-    use {
-        "altermo/ultimate-autopair.nvim",
-        event={"InsertEnter", "CmdlineEnter"},
-        config=function()
-            require("ultimate-autopair").setup({})
-        end
-    }
-
     -- surround
     use {
         "kylechui/nvim-surround",
