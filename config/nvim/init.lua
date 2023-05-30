@@ -125,9 +125,11 @@ require("packer").startup(function(use)
     -- lspの色
     use "folke/lsp-colors.nvim"
 
-
     -- scroll-bar
     use "petertriho/nvim-scrollbar"
+
+    -- 括弧
+    use "cohama/lexima.vim"
 
     if packer_bootstrap then
         require("packer").sync()
@@ -164,6 +166,9 @@ lspconfig.pyright.setup {
             }
         },
     }
+}
+lspconfig.jdtls.setup {
+    on_attach = on_attach,
 }
 lspconfig.rust_analyzer.setup {
     on_attach = on_attach,
