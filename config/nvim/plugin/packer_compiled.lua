@@ -119,6 +119,11 @@ _G.packer_plugins = {
     path = "/home/zoe/.local/share/nvim/site/pack/packer/start/indent-blankline.nvim",
     url = "https://github.com/lukas-reineke/indent-blankline.nvim"
   },
+  ["lexima.vim"] = {
+    loaded = true,
+    path = "/home/zoe/.local/share/nvim/site/pack/packer/start/lexima.vim",
+    url = "https://github.com/cohama/lexima.vim"
+  },
   ["lsp-colors.nvim"] = {
     loaded = true,
     path = "/home/zoe/.local/share/nvim/site/pack/packer/start/lsp-colors.nvim",

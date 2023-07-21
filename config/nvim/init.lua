@@ -19,21 +19,6 @@ vim.keymap.set("n", "<space>l", "<C-w>l")
 vim.keymap.set("n", "j", "gj")
 vim.keymap.set("n", "k", "gk")
 
-vim.opt.clipboard = 'unnamedplus'
-if vim.fn.has("wsl") then
-  vim.g.clipboard = {
-    name = "win32yank-wsl",
-    copy = {
-      ["+"] = "win32yank.exe -i --crlf",
-      ["*"] = "win32yank.exe -i --crlf"
-    },
-    paste = {
-      ["+"] = "win32yank.exe -o --crlf",
-      ["*"] = "win32yank.exe -o --crlf"
-    },
-    cache_enable = 0,
-  }
-end
 
 -- packer.nvimを自動でインストール
 local install_path = vim.fn.stdpath "data" .. "/site/pack/packer/start/packer.nvim"
@@ -49,6 +34,12 @@ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
     }
 end
 
+
+-- 置換を楽にするやつ
+-- https://zenn.dev/vim_jp/articles/2023-06-30-vim-substitute-tips
+vim.cmd [[
+    cnoreabbrev <expr> s getcmdtype() .. getcmdline() ==# ':s' ? [getchar(), ''][1] .. "%s///g<Left><Left>" : 's'
+]]
 
 -- プラグインをインストール
 require("packer").startup(function(use)
