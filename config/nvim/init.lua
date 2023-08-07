@@ -9,6 +9,8 @@ vim.opt.expandtab = true
 vim.opt.winblend = 5
 vim.wo.signcolumn="number"
 vim.opt.winblend = 5
+vim.opt.smartcase = true
+vim.opt.ignorecase = true
 
 
 -- 必須のキーマップ
