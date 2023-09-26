@@ -12,6 +12,23 @@ vim.opt.winblend = 5
 vim.opt.smartcase = true
 vim.opt.ignorecase = true
 
+-- 絶妙な設定
+-- (required:https://github.com/equalsraf/win32yank)
+vim.opt.clipboard:prepend {"unnamedplus"}
+if vim.fn.has("wsl") then
+  vim.g.clipboard = {
+    name = "win32yank-wsl",
+    copy = {
+      ["+"] = "win32yank.exe -i",
+      ["*"] = "win32yank.exe -i"
+    },
+    paste = {
+      ["+"] = "win32yank.exe -o",
+      ["*"] = "win32yank.exe -of"
+    },
+    cache_enable = 0,
+  }
+end
 
 -- 必須のキーマップ
 vim.keymap.set("n", "<space>h", "<C-w>h")
