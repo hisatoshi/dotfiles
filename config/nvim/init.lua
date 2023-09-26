@@ -114,8 +114,8 @@ require("packer").startup(function(use)
 
     -- テーマ
     -- use "sainnhe/sonokai"
-    use { "catppuccin/nvim", as = "catppuccin" }
-
+    -- use { "catppuccin/nvim", as = "catppuccin" }
+    use {"kaiuri/nvim-juliana", config = function() require "nvim-juliana".setup{} end}
     -- かっこよくするやつ
     use({ "folke/noice.nvim", requires = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify", } })
 
@@ -342,9 +342,6 @@ require "nvim-treesitter.configs".setup {
     },
 }
 
-require "catppuccin".setup {
-    no_italic = true,
-}
 require('lualine').setup{
     options = {
       globalstatus = true
@@ -381,4 +378,5 @@ require "trouble".setup()
 require "lsp-colors".setup()
 
 -- color scheme--
-vim.cmd "colorscheme catppuccin-frappe"
+-- vim.cmd "colorscheme catppuccin-frappe"
+vim.cmd "colorscheme juliana"
