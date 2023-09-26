@@ -1,6 +1,6 @@
 local wezterm = require 'wezterm';
 return {
-  font = wezterm.font("HackGen Console NF", {weight="Regular", stretch="Normal", italic=false}),
+  font = wezterm.font("0xProto"),
   font_size = 13,
   color_scheme = "Catppuccin Frappe",
   default_prog = {"wsl.exe", "--distribution", "Ubuntu", "--exec", "/bin/zsh", "-l"},
