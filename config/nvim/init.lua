@@ -74,7 +74,7 @@ require("packer").startup(function(use)
     use "williamboman/mason-lspconfig.nvim"
     use "chapel-lang/mason-registry"
     use "glepnir/lspsaga.nvim"
-    use "j-hui/fidget.nvim" --右下に出すやつ
+    use {"j-hui/fidget.nvim", tag = "legacy"} --右下に出すやつ
     use "kevinhwang91/nvim-bqf"
 
     -- 補完関係
@@ -110,7 +110,7 @@ require("packer").startup(function(use)
     use {"nvim-lualine/lualine.nvim", requires={ "nvim-tree/nvim-web-devicons", opt = true }}
 
     -- indent-lineが見えるやつ
-    use "lukas-reineke/indent-blankline.nvim"
+    use {"lukas-reineke/indent-blankline.nvim", main="ibl", opt={}}
 
     -- テーマ
     -- use "sainnhe/sonokai"
@@ -371,7 +371,7 @@ require("noice").setup({
 })
 
 require("scrollbar").setup()
-require "indent_blankline".setup()
+require "ibl".setup()
 require "gitsigns".setup()
 require "fidget".setup()
 require "trouble".setup()
