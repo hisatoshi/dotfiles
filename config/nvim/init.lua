@@ -370,8 +370,11 @@ require("noice").setup({
     },
 })
 
+require "ibl".setup({
+    scope = { enabled = false }
+})
+
 require("scrollbar").setup()
-require "ibl".setup()
 require "gitsigns".setup()
 require "fidget".setup()
 require "trouble".setup()
