@@ -90,7 +90,7 @@ require("packer").startup(function(use)
     use "lewis6991/gitsigns.nvim"
 
     -- null-ls
-    use { "jose-elias-alvarez/null-ls.nvim", requires = { "nvim-lua/plenary.nvim" } }
+    use { "nvimtools/none-ls.nvim", requires = { "nvim-lua/plenary.nvim" } }
 
     -- fuzzyfinder
     use {"nvim-telescope/telescope.nvim", requires = { {"nvim-lua/plenary.nvim"} }}
@@ -109,8 +109,8 @@ require("packer").startup(function(use)
     -- ステータスライン
     use {"nvim-lualine/lualine.nvim", requires={ "nvim-tree/nvim-web-devicons", opt = true }}
 
-    -- indent-lineが見えるやつ
-    use {"lukas-reineke/indent-blankline.nvim", main="ibl", opt={}}
+    -- indent
+    use "lukas-reineke/indent-blankline.nvim"
 
     -- テーマ
     -- use "sainnhe/sonokai"
@@ -370,8 +370,9 @@ require("noice").setup({
     },
 })
 
-require "ibl".setup({
-    scope = { enabled = false }
+require("ibl").setup({
+    scope = {enabled = false}
+
 })
 
 require("scrollbar").setup()
