@@ -307,7 +307,7 @@ telescope.setup {
 
 local hop = require"hop"
 hop.setup { keys = "etovxqpdygfblzhckisuran"}
-vim.keymap.set('', 'f', function() hop.hint_char2({ hint_offset = 2}) end, {remap=true})
+vim.keymap.set('', 'f', function() hop.hint_char2({ hint_offset = 1}) end, {remap=true})
 
 
 -- その他の設定
