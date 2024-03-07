@@ -70,12 +70,10 @@ require("packer").startup(function(use)
 
     -- Lsp関係
     use "neovim/nvim-lspconfig"
-    use "williamboman/mason.nvim"
-    use "williamboman/mason-lspconfig.nvim"
-    use "chapel-lang/mason-registry"
     use "glepnir/lspsaga.nvim"
-    use {"j-hui/fidget.nvim", tag = "legacy"} --右下に出すやつ
+    use "j-hui/fidget.nvim"
     use "kevinhwang91/nvim-bqf"
+    use {"creativenull/efmls-configs-nvim", requires = {"neovim/nvim-lspconfig"}}
 
     -- 補完関係
     use "hrsh7th/nvim-cmp"
@@ -159,14 +157,8 @@ local on_attach = function(_, _)
     set("n", "<space>i", "<cmd>Lspsaga show_line_diagnostics<CR>")
     set("n", "<space>rn", "<cmd>Lspsaga rename<CR>")
     set("n", "<space>g", "<cmd>Lspsaga peek_definition<CR>")
-    set("n", "<space>r", "<cmd>Lspsaga lsp_finder<CR>")
 end
 
--- masonで管理されたLSPの設定
-require("mason").setup()
-require("mason-lspconfig").setup {
-    ensure_installed = {"pyright", "rust_analyzer", "lua_ls"}
-}
 local lspconfig = require "lspconfig"
 lspconfig.pyright.setup {
     on_attach = on_attach,
@@ -178,58 +170,22 @@ lspconfig.pyright.setup {
         },
     }
 }
-lspconfig.jdtls.setup {
-    on_attach = on_attach,
-}
-lspconfig.rust_analyzer.setup {
-    on_attach = on_attach,
-}
-lspconfig.lua_ls.setup {
-    on_attach = on_attach,
+lspconfig.efm.setup {
+    root_dir = function() return vim.fn.getcwd() end;
     settings = {
-        Lua = {
-            diagnostics = {
-                globals = {'vim'},
+        rootMarkers = {vim.fn.getcwd()},
+        languages = {
+            python = {
+                {
+                    lintCommand = "flake8 --max-line-length 200 --stdin-display-name ${INPUT} -",
+                    lintIgnoreExitCode = true,
+                    lintStdin = true,
+                    lintFormats = {"%f:%l:%c: %m"},
+                },
             }
         }
     }
 }
-
-
--- masonで管理されたLSP以外の設定をnull-ls経由で有効化
-local mason_package = require"mason-core.package"
-local mason_registry = require"mason-registry"
-local null_ls = require "null-ls"
-local null_sources = {}
-for _, package in ipairs(mason_registry.get_installed_packages()) do
-    local package_categories = package.spec.categories[1]
-    if package_categories == mason_package.Cat.Formatter then
-        table.insert(null_sources, null_ls.builtins.formatting[package.name])
-    end
-    if package_categories == mason_package.Cat.Linter then
-        -- flake8にline_too_longを無視する設定を追加
-        if package.name == "flake8" then
-            table.insert(null_sources, null_ls.builtins.diagnostics.flake8.with({
-                extra_args = {"--ignore=E501,W503,W504"}
-            }))
-        else
-            table.insert(null_sources, null_ls.builtins.diagnostics[package.name])
-        end
-    end
-end
-
-null_ls.setup ({
-    sources = null_sources,
-    on_attach = function(client, _)
-        if client.supports_method("textDocument/formatting") then
-            vim.keymap.set("n", "<space>q", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end)
-            -- 他の書き方を残しておく
-            -- vim.keymap.set("n", "<space>q", vim.lsp.buf.format)
-            -- vim.cmd('map <space>q :lua vim.lsp.buf.format({ timeout_ms =  2000 })<CR>')
-        end
-    end,
-})
-
 
 -- 補完の設定
 vim.opt.completeopt = "menu,menuone,noselect"

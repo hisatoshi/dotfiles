@@ -94,6 +94,11 @@ _G.packer_plugins = {
     path = "/home/zoe/.local/share/nvim/site/pack/packer/start/cmp-vsnip",
     url = "https://github.com/hrsh7th/cmp-vsnip"
   },
+  ["efmls-configs-nvim"] = {
+    loaded = true,
+    path = "/home/zoe/.local/share/nvim/site/pack/packer/start/efmls-configs-nvim",
+    url = "https://github.com/creativenull/efmls-configs-nvim"
+  },
   ["fidget.nvim"] = {
     loaded = true,
     path = "/home/zoe/.local/share/nvim/site/pack/packer/start/fidget.nvim",
@@ -138,21 +143,6 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/zoe/.local/share/nvim/site/pack/packer/start/lualine.nvim",
     url = "https://github.com/nvim-lualine/lualine.nvim"
-  },
-  ["mason-lspconfig.nvim"] = {
-    loaded = true,
-    path = "/home/zoe/.local/share/nvim/site/pack/packer/start/mason-lspconfig.nvim",
-    url = "https://github.com/williamboman/mason-lspconfig.nvim"
-  },
-  ["mason-registry"] = {
-    loaded = true,
-    path = "/home/zoe/.local/share/nvim/site/pack/packer/start/mason-registry",
-    url = "https://github.com/chapel-lang/mason-registry"
-  },
-  ["mason.nvim"] = {
-    loaded = true,
-    path = "/home/zoe/.local/share/nvim/site/pack/packer/start/mason.nvim",
-    url = "https://github.com/williamboman/mason.nvim"
   },
   ["memolist.vim"] = {
     loaded = true,
