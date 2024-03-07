@@ -1,114 +1,113 @@
-window:
-  decorations: full
-  startup_mode: Windowed
-  opacity: 0.97
+[[colors.indexed_colors]]
+color = "#EF9F76"
+index = 16
 
-scrolling:
-  history: 10000
-  multiplier: 3
+[[colors.indexed_colors]]
+color = "#F2D5CF"
+index = 17
 
-font:
-  normal:
-    family: "HackGen Console NF"
+[colors.bright]
+black = "#626880"
+blue = "#8CAAEE"
+cyan = "#81C8BE"
+green = "#A6D189"
+magenta = "#F4B8E4"
+red = "#E78284"
+white = "#A5ADCE"
+yellow = "#E5C890"
 
-  bold:
-    family: "HackGen Console NF"
-    style: Bold
-  italic:
-    family: "HackGen Console NF"
-    style: italic
-  size: 13.0
+[colors.cursor]
+cursor = "#F2D5CF"
+text = "#303446"
 
-selection:
-  semantic_escape_chars: ",│`|:\"' ()[]{}<>\t"
-  save_to_clipboard: true
+[colors.dim]
+black = "#51576D"
+blue = "#8CAAEE"
+cyan = "#81C8BE"
+green = "#A6D189"
+magenta = "#F4B8E4"
+red = "#E78284"
+white = "#B5BFE2"
+yellow = "#E5C890"
 
-cursor:
-  style:
-    shape: Block
-    blinking: Off
+[colors.hints.end]
+background = "#A5ADCE"
+foreground = "#303446"
 
-shell:
-  program: 'C:\Windows\system32\wsl.exe'
-mouse_bindings:
-  - { mouse: Middle, action: PasteSelection }
+[colors.hints.start]
+background = "#E5C890"
+foreground = "#303446"
 
-colors:
-    # Default colors
-    primary:
-        background: "#303446" # base
-        foreground: "#C6D0F5" # text
-        # Bright and dim foreground colors
-        dim_foreground: "#C6D0F5" # text
-        bright_foreground: "#C6D0F5" # text
+[colors.normal]
+black = "#51576D"
+blue = "#8CAAEE"
+cyan = "#81C8BE"
+green = "#A6D189"
+magenta = "#F4B8E4"
+red = "#E78284"
+white = "#B5BFE2"
+yellow = "#E5C890"
 
-    # Cursor colors
-    cursor:
-        text: "#303446" # base
-        cursor: "#F2D5CF" # rosewater
-    vi_mode_cursor:
-        text: "#303446" # base
-        cursor: "#BABBF1" # lavender
+[colors.primary]
+background = "#303446"
+bright_foreground = "#C6D0F5"
+dim_foreground = "#C6D0F5"
+foreground = "#C6D0F5"
 
-    # Search colors
-    search:
-        matches:
-            foreground: "#303446" # base
-            background: "#A5ADCE" # subtext0
-        focused_match:
-            foreground: "#303446" # base
-            background: "#A6D189" # green
-        footer_bar:
-            foreground: "#303446" # base
-            background: "#A5ADCE" # subtext0
+[colors.search.focused_match]
+background = "#A6D189"
+foreground = "#303446"
 
-    # Keyboard regex hints
-    hints:
-        start:
-            foreground: "#303446" # base
-            background: "#E5C890" # yellow
-        end:
-            foreground: "#303446" # base
-            background: "#A5ADCE" # subtext0
+[colors.search.matches]
+background = "#A5ADCE"
+foreground = "#303446"
 
-    # Selection colors
-    selection:
-        text: "#303446" # base
-        background: "#F2D5CF" # rosewater
+[colors.selection]
+background = "#F2D5CF"
+text = "#303446"
 
-    # Normal colors
-    normal:
-        black: "#51576D" # surface1
-        red: "#E78284" # red
-        green: "#A6D189" # green
-        yellow: "#E5C890" # yellow
-        blue: "#8CAAEE" # blue
-        magenta: "#F4B8E4" # pink
-        cyan: "#81C8BE" # teal
-        white: "#B5BFE2" # subtext1
+[colors.vi_mode_cursor]
+cursor = "#BABBF1"
+text = "#303446"
 
-    # Bright colors
-    bright:
-        black: "#626880" # surface2
-        red: "#E78284" # red
-        green: "#A6D189" # green
-        yellow: "#E5C890" # yellow
-        blue: "#8CAAEE" # blue
-        magenta: "#F4B8E4" # pink
-        cyan: "#81C8BE" # teal
-        white: "#A5ADCE" # subtext0
+[cursor.style]
+blinking = "Off"
+shape = "Block"
 
-    # Dim colors
-    dim:
-        black: "#51576D" # surface1
-        red: "#E78284" # red
-        green: "#A6D189" # green
-        yellow: "#E5C890" # yellow
-        blue: "#8CAAEE" # blue
-        magenta: "#F4B8E4" # pink
-        cyan: "#81C8BE" # teal
-        white: "#B5BFE2" # subtext1
+[font]
+size = 11.0
 
-    indexed_colors:
-        - { index: 16, color: "#EF9F76" }
-        - { index: 17, color: "#F2D5CF" }
+[font.bold]
+family = "0xProto Nerd Font"
+style = "Bold"
+
+[font.italic]
+family = "0xProto Nerd Font"
+style = "italic"
+
+[font.normal]
+family = "0xProto Nerd Font"
+
+[[mouse.bindings]]
+action = "PasteSelection"
+mouse = "Middle"
+
+[scrolling]
+history = 10000
+multiplier = 3
+
+[selection]
+save_to_clipboard = true
+semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
+
+[shell]
+program = 'C:\Windows\system32\wsl.exe'
+
+[window]
+decorations = "full"
+opacity = 0.97
+startup_mode = "Windowed"
+
+[env]
+TERM = "xterm-256color"
+
