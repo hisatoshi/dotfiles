@@ -116,6 +116,7 @@ require("packer").startup(function(use)
     -- use "sainnhe/sonokai"
     -- use { "catppuccin/nvim", as = "catppuccin" }
     use {"kaiuri/nvim-juliana", config = function() require "nvim-juliana".setup{} end}
+
     -- かっこよくするやつ
     use({ "folke/noice.nvim", requires = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify", } })
 
@@ -375,7 +376,7 @@ require("ibl").setup({
 
 })
 
-require("scrollbar").setup()
+require "scrollbar".setup()
 require "gitsigns".setup()
 require "fidget".setup()
 require "trouble".setup()
