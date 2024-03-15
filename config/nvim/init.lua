@@ -87,9 +87,6 @@ require("packer").startup(function(use)
     -- git
     use "lewis6991/gitsigns.nvim"
 
-    -- null-ls
-    use { "nvimtools/none-ls.nvim", requires = { "nvim-lua/plenary.nvim" } }
-
     -- fuzzyfinder
     use {"nvim-telescope/telescope.nvim", requires = { {"nvim-lua/plenary.nvim"} }}
 
@@ -157,6 +154,7 @@ local on_attach = function(_, _)
     set("n", "<space>i", "<cmd>Lspsaga show_line_diagnostics<CR>")
     set("n", "<space>rn", "<cmd>Lspsaga rename<CR>")
     set("n", "<space>g", "<cmd>Lspsaga peek_definition<CR>")
+    set("n", "<space>q", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end)
 end
 
 local lspconfig = require "lspconfig"
@@ -170,22 +168,33 @@ lspconfig.pyright.setup {
         },
     }
 }
-lspconfig.efm.setup {
-    root_dir = function() return vim.fn.getcwd() end;
+local fs = require("efmls-configs.fs")
+local flake8 = require("efmls-configs.linters.flake8")
+local black = require("efmls-configs.formatters.black")
+local jq = require("efmls-configs.formatters.jq")
+
+-- 中身を見て気に入らなかったら色々とここで書き換える
+-- print(flake8.lintCommand)
+flake8.lintCommand = string.format('%s --max-line-length 200 -', fs.executable("flake8"))
+
+local languages = {
+    python = {flake8, black},
+    json = {jq}
+}
+local efmls_config = {
+    filetypes = vim.tbl_keys(languages),
     settings = {
         rootMarkers = {vim.fn.getcwd()},
-        languages = {
-            python = {
-                {
-                    lintCommand = "flake8 --max-line-length 200 --stdin-display-name ${INPUT} -",
-                    lintIgnoreExitCode = true,
-                    lintStdin = true,
-                    lintFormats = {"%f:%l:%c: %m"},
-                },
-            }
-        }
+        languages = languages
+    },
+    init_options = {
+        documentFormatting = true,
+        documentRangeFormatting = true
     }
 }
+lspconfig.efm.setup(vim.tbl_extend("force", efmls_config, {
+    --- settings = { languages = { python = { lintCommand = "flake8 --max-line-length 200 -" } } }
+}))
 
 -- 補完の設定
 vim.opt.completeopt = "menu,menuone,noselect"
