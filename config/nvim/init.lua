@@ -86,6 +86,7 @@ require("packer").startup(function(use)
 
     -- git
     use "lewis6991/gitsigns.nvim"
+    use "sindrets/diffview.nvim"
 
     -- fuzzyfinder
     use {"nvim-telescope/telescope.nvim", requires = { {"nvim-lua/plenary.nvim"} }}
@@ -110,7 +111,8 @@ require("packer").startup(function(use)
     -- テーマ
     -- use "sainnhe/sonokai"
     -- use { "catppuccin/nvim", as = "catppuccin" }
-    use {"kaiuri/nvim-juliana", config = function() require "nvim-juliana".setup{} end}
+    -- use {"kaiuri/nvim-juliana", config = function() require "nvim-juliana".setup{} end}
+    use {"olimorris/onedarkpro.nvim"}
 
     -- かっこよくするやつ
     use({ "folke/noice.nvim", requires = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify", } })
@@ -136,6 +138,9 @@ require("packer").startup(function(use)
 
     -- 括弧
     use "cohama/lexima.vim"
+
+    -- リサイズするやつ
+    use "simeji/winresizer"
 
     if packer_bootstrap then
         require("packer").sync()
@@ -192,9 +197,7 @@ local efmls_config = {
         documentRangeFormatting = true
     }
 }
-lspconfig.efm.setup(vim.tbl_extend("force", efmls_config, {
-    --- settings = { languages = { python = { lintCommand = "flake8 --max-line-length 200 -" } } }
-}))
+lspconfig.efm.setup(vim.tbl_extend("force", efmls_config, {}))
 
 -- 補完の設定
 vim.opt.completeopt = "menu,menuone,noselect"
@@ -314,7 +317,8 @@ require('lualine').setup{
     },
     sections = {
       lualine_c = {{'filename', path = 1}}
-    }
+    },
+    theme = "eldritch"
 }
 
 require("noice").setup({
@@ -348,5 +352,10 @@ require "trouble".setup()
 require "lsp-colors".setup()
 
 -- color scheme--
+vim.cmd "colorscheme onedark"
+-- vim.cmd "colorscheme eldritch"
+-- vim.cmd "colorscheme sonokai"
 -- vim.cmd "colorscheme catppuccin-frappe"
-vim.cmd "colorscheme juliana"
+-- vim.cmd "colorscheme juliana"
+--
+--
