@@ -1,14 +1,18 @@
 -- 見た目の調整
 vim.opt.termguicolors = true
 vim.opt.number = true
+vim.opt.relativenumber = true
 vim.opt.swapfile = false
 vim.opt.laststatus = 3
+-- タブをスペース4つ分でヒョ持する
 vim.opt.tabstop=4
+-- インデント後のスペース幅を4にする
 vim.opt.shiftwidth=4
+-- タブを入力した際に自動でスペースにする
 vim.opt.expandtab = true
 vim.opt.winblend = 5
-vim.wo.signcolumn="number"
-vim.opt.winblend = 5
+-- vim.wo.signcolumn="number"
+vim.wo.signcolumn="yes"
 vim.opt.smartcase = true
 vim.opt.ignorecase = true
 
@@ -352,6 +356,12 @@ require "trouble".setup()
 require "lsp-colors".setup()
 
 -- color scheme--
+vim.api.nvim_create_augroup("colorcheme_group", {})
+vim.api.nvim_create_autocmd("ColorScheme", {
+    group = "colorcheme_group",
+    pattern = {"*"},
+    command = [[highlight LineNr guifg=#fdffe2]]
+})
 vim.cmd "colorscheme onedark"
 -- vim.cmd "colorscheme eldritch"
 -- vim.cmd "colorscheme sonokai"
