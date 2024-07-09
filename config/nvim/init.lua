@@ -302,6 +302,12 @@ require "neo-tree".setup {
     }
 }
 
+vim.api.nvim_create_user_command(
+    "WinR",
+    function() vim.api.nvim_command("WinResizerStartResize") end,
+    {}
+)
+
 require "nvim-web-devicons".setup {
     color_icons = true,
     default = true
