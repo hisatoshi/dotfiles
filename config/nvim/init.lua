@@ -35,12 +35,14 @@ if vim.fn.has("wsl") then
 end
 
 -- 必須のキーマップ
-vim.keymap.set("n", "<space>h", "<C-w>h")
-vim.keymap.set("n", "<space>j", "<C-w>j")
-vim.keymap.set("n", "<space>k", "<C-w>k")
-vim.keymap.set("n", "<space>l", "<C-w>l")
+vim.keymap.set("n", "<space><Left>", "<C-w>h")
+vim.keymap.set("n", "<space><Down>", "<C-w>j")
+vim.keymap.set("n", "<space><Up>", "<C-w>k")
+vim.keymap.set("n", "<space><Right>", "<C-w>l")
 vim.keymap.set("n", "j", "gj")
 vim.keymap.set("n", "k", "gk")
+vim.keymap.set("n", "<Down>", "gj")
+vim.keymap.set("n", "<Up>", "gk")
 
 
 -- packer.nvimを自動でインストール
@@ -124,9 +126,6 @@ require("packer").startup(function(use)
     -- filer
     vim.g.tree_remove_legacy_commands = 1
     use { "nvim-neo-tree/neo-tree.nvim", branch = "v2.x", requires = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim"}}
-
-    -- 飛ぶやつ
-    use { "phaazon/hop.nvim", branch = "v2"}
 
     -- メモるやつ
     use "glidenote/memolist.vim"
@@ -277,11 +276,6 @@ telescope.setup {
         },
     },
 }
-
-local hop = require"hop"
-hop.setup { keys = "etovxqpdygfblzhckisuran"}
-vim.keymap.set('', 'f', function() hop.hint_char2({ hint_offset = 1}) end, {remap=true})
-
 
 -- その他の設定
 vim.keymap.set("n", "<space>e", ":Neotree float<CR>")
