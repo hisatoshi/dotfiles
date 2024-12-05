@@ -78,15 +78,15 @@ shape = "Block"
 size = 11.0
 
 [font.bold]
-family = "0xProto Nerd Font"
+family = "Explex35 Console NF"
 style = "Bold"
 
 [font.italic]
-family = "0xProto Nerd Font"
+family = "Explex35 Console NF"
 style = "italic"
 
 [font.normal]
-family = "0xProto Nerd Font"
+family = "Explex35 Console NF"
 
 [[mouse.bindings]]
 action = "PasteSelection"
