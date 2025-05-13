@@ -34,6 +34,20 @@ if vim.fn.has("wsl") then
   }
 end
 
+-- 言語ごとのタブ調整
+local filetype_tabstop = {javascript=2} -- filetype毎のインデント幅
+local usrftcfg = vim.api.nvim_create_augroup("UserFileTypeConfig", { clear = true})
+vim.api.nvim_create_autocmd("FileType", {
+  group = usrftcfg,
+  callback = function (args)
+    local ftts = filetype_tabstop[args.match]
+    if ftts then
+      vim.bo.tabstop = ftts
+      vim.bo.shiftwidth = ftts
+    end
+  end
+})
+
 -- 必須のキーマップ
 vim.keymap.set("n", "<space><Left>", "<C-w>h")
 vim.keymap.set("n", "<space><Down>", "<C-w>j")
@@ -145,6 +159,9 @@ require("packer").startup(function(use)
     -- リサイズするやつ
     use "simeji/winresizer"
 
+    -- 行末の括弧を消すやつ
+    use "cappyzawa/trim.nvim"
+
     if packer_bootstrap then
         require("packer").sync()
     end
@@ -171,10 +188,14 @@ lspconfig.pyright.setup {
     settings = {
         python = {
             analysis = {
-                typeCheckingMode = "basic"
+                typeCheckingMode = "strict"
             }
         },
     }
+}
+lspconfig.ts_ls.setup {
+    on_attach = on_attach,
+    setting = {}
 }
 local fs = require("efmls-configs.fs")
 local flake8 = require("efmls-configs.linters.flake8")
@@ -183,7 +204,8 @@ local jq = require("efmls-configs.formatters.jq")
 
 -- 中身を見て気に入らなかったら色々とここで書き換える
 -- print(flake8.lintCommand)
-flake8.lintCommand = string.format('%s --max-line-length 200 -', fs.executable("flake8"))
+-- E501をいい感じに200文字にし、W391(blank line at end of file)を無視する
+flake8.lintCommand = string.format('%s --max-line-length 200 --ignore=W391,W503 -', fs.executable("flake8"))
 
 local languages = {
     python = {flake8, black},
@@ -349,6 +371,13 @@ require("ibl").setup({
 
 })
 
+require("trim").setup ({
+    trim_last_line = false,
+    patterns = {
+        [[%s/\n*\%$/\r/]],
+    },
+})
+
 require "scrollbar".setup()
 require "gitsigns".setup()
 require "fidget".setup()
@@ -369,3 +398,4 @@ vim.cmd "colorscheme onedark"
 -- vim.cmd "colorscheme juliana"
 --
 --
+
