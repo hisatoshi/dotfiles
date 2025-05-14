@@ -382,6 +382,8 @@ require "scrollbar".setup()
 require "gitsigns".setup()
 require "fidget".setup()
 require "trouble".setup()
+vim.keymap.set("n", "<space>xx", "<cmd>Trouble diagnostics toggle<CR>", {})
+
 require "lsp-colors".setup()
 
 -- color scheme--
