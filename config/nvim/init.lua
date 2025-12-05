@@ -1,282 +1,222 @@
--- 見た目の調整
+----------------------------------------------------------------------
+--  基本設定
+----------------------------------------------------------------------
 vim.opt.termguicolors = true
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.swapfile = false
 vim.opt.laststatus = 3
--- タブをスペース4つ分でヒョ持する
-vim.opt.tabstop=4
--- インデント後のスペース幅を4にする
-vim.opt.shiftwidth=4
--- タブを入力した際に自動でスペースにする
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.opt.winblend = 5
--- vim.wo.signcolumn="number"
-vim.wo.signcolumn="yes"
+vim.opt.signcolumn = "yes"
 vim.opt.smartcase = true
 vim.opt.ignorecase = true
+vim.opt.completeopt = "menu,menuone,noselect"
 
--- 絶妙な設定
--- (required:https://github.com/equalsraf/win32yank)
-vim.opt.clipboard:prepend {"unnamedplus"}
-if vim.fn.has("wsl") then
+-- クリップボード（WSL）
+vim.opt.clipboard:prepend({ "unnamedplus" })
+if vim.fn.has("wsl") == 1 then
   vim.g.clipboard = {
     name = "win32yank-wsl",
-    copy = {
-      ["+"] = "win32yank.exe -i",
-      ["*"] = "win32yank.exe -i"
-    },
-    paste = {
-      ["+"] = "win32yank.exe -o",
-      ["*"] = "win32yank.exe -of"
-    },
+    copy = { ["+"] = "win32yank.exe -i", ["*"] = "win32yank.exe -i" },
+    paste = { ["+"] = "win32yank.exe -o", ["*"] = "win32yank.exe -o" },
     cache_enable = 0,
   }
 end
 
--- 言語ごとのタブ調整
-local filetype_tabstop = {javascript=2} -- filetype毎のインデント幅
-local usrftcfg = vim.api.nvim_create_augroup("UserFileTypeConfig", { clear = true})
+----------------------------------------------------------------------
+--  キーマップ
+----------------------------------------------------------------------
+local map = vim.keymap.set
+map("n", "<space><Left>", "<C-w>h")
+map("n", "<space><Down>", "<C-w>j")
+map("n", "<space><Up>", "<C-w>k")
+map("n", "<space><Right>", "<C-w>l")
+map("n", "j", "gj")
+map("n", "k", "gk")
+map("n", "<Down>", "gj")
+map("n", "<Up>", "gk")
+
+vim.cmd([[cnoreabbrev <expr> s getcmdtype() .. getcmdline() ==# ':s' ? [getchar(), ''][1] .. "%s///g<Left><Left>" : 's']])
+
+----------------------------------------------------------------------
+--  Autocmd
+----------------------------------------------------------------------
+local filetype_tabstop = { javascript = 2 }
 vim.api.nvim_create_autocmd("FileType", {
-  group = usrftcfg,
-  callback = function (args)
+  group = vim.api.nvim_create_augroup("UserFileTypeConfig", { clear = true }),
+  callback = function(args)
     local ftts = filetype_tabstop[args.match]
     if ftts then
       vim.bo.tabstop = ftts
       vim.bo.shiftwidth = ftts
     end
-  end
+  end,
 })
 
--- 必須のキーマップ
-vim.keymap.set("n", "<space><Left>", "<C-w>h")
-vim.keymap.set("n", "<space><Down>", "<C-w>j")
-vim.keymap.set("n", "<space><Up>", "<C-w>k")
-vim.keymap.set("n", "<space><Right>", "<C-w>l")
-vim.keymap.set("n", "j", "gj")
-vim.keymap.set("n", "k", "gk")
-vim.keymap.set("n", "<Down>", "gj")
-vim.keymap.set("n", "<Up>", "gk")
-
-
--- packer.nvimを自動でインストール
-local install_path = vim.fn.stdpath "data" .. "/site/pack/packer/start/packer.nvim"
-local packer_bootstrap = nil
-if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
-    packer_bootstrap = vim.fn.system {
-        "git",
-        "clone",
-        "--depth",
-        "1",
-        "https://github.com/wbthomason/packer.nvim",
-        install_path,
-    }
+----------------------------------------------------------------------
+--  lazy.nvim Bootstrap
+----------------------------------------------------------------------
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  vim.fn.system({
+    "git", "clone", "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git", "--branch=stable", lazypath,
+  })
 end
+vim.opt.runtimepath:prepend(lazypath)
 
-
--- 置換を楽にするやつ
--- https://zenn.dev/vim_jp/articles/2023-06-30-vim-substitute-tips
-vim.cmd [[
-    cnoreabbrev <expr> s getcmdtype() .. getcmdline() ==# ':s' ? [getchar(), ''][1] .. "%s///g<Left><Left>" : 's'
-]]
-
--- プラグインをインストール
-require("packer").startup(function(use)
-    -- パッケージマネージャ
-    use "wbthomason/packer.nvim"
-
-    -- iconを追加
-    use "nvim-tree/nvim-web-devicons"
-
-    -- Lsp関係
-    use "neovim/nvim-lspconfig"
-    use "glepnir/lspsaga.nvim"
-    use "j-hui/fidget.nvim"
-    use "kevinhwang91/nvim-bqf"
-    use {"creativenull/efmls-configs-nvim", requires = {"neovim/nvim-lspconfig"}}
-
-    -- 補完関係
-    use "hrsh7th/nvim-cmp"
-    use "hrsh7th/cmp-nvim-lsp"
-    use "hrsh7th/cmp-vsnip"
-    use "hrsh7th/cmp-buffer"
-    use "hrsh7th/cmp-path"
-    use "hrsh7th/vim-vsnip"
-    use "onsails/lspkind.nvim"
-
-    -- git
-    use "lewis6991/gitsigns.nvim"
-    use "sindrets/diffview.nvim"
-
-    -- fuzzyfinder
-    use {"nvim-telescope/telescope.nvim", requires = { {"nvim-lua/plenary.nvim"} }}
-
-    -- TreeSitter
-    use {"nvim-treesitter/nvim-treesitter", run = ":TSUpdate"}
-
-    -- surround
-    use {
-        "kylechui/nvim-surround",
-        tag = "*",
-        config = function()
-            require("nvim-surround").setup({}) end
-    }
-
-    -- ステータスライン
-    use {"nvim-lualine/lualine.nvim", requires={ "nvim-tree/nvim-web-devicons", opt = true }}
-
-    -- indent
-    use "lukas-reineke/indent-blankline.nvim"
-
-    -- テーマ
-    -- use "sainnhe/sonokai"
-    -- use { "catppuccin/nvim", as = "catppuccin" }
-    -- use {"kaiuri/nvim-juliana", config = function() require "nvim-juliana".setup{} end}
-    use {"olimorris/onedarkpro.nvim"}
-
-    -- かっこよくするやつ
-    use({ "folke/noice.nvim", requires = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify", } })
-
-    -- filer
-    vim.g.tree_remove_legacy_commands = 1
-    use { "nvim-neo-tree/neo-tree.nvim", branch = "v2.x", requires = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim"}}
-
-    -- メモるやつ
-    use "glidenote/memolist.vim"
-
-    -- エラー出るやつ
-    use { "folke/trouble.nvim", requires = "nvim-tree/nvim-web-devicons"}
-
-    -- lspの色
-    use "folke/lsp-colors.nvim"
-
-    -- scroll-bar
-    use "petertriho/nvim-scrollbar"
-
-    -- 括弧
-    use "cohama/lexima.vim"
-
-    -- リサイズするやつ
-    use "simeji/winresizer"
-
-    -- 行末の括弧を消すやつ
-    use "cappyzawa/trim.nvim"
-
-    if packer_bootstrap then
-        require("packer").sync()
-    end
-
-end)
-
-
--- LSPクライアントがバッファにアタッチされたときに実行される
+----------------------------------------------------------------------
+--  LSP on_attach
+----------------------------------------------------------------------
 local on_attach = function(_, _)
-    require "lspsaga".setup()
-    local set = vim.keymap.set
-    set("n", "[d", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>")
-    set("n", "]d", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
-    set("n", "K", "<cmd>Lspsaga hover_doc<CR>")
-    set("n", "<space>i", "<cmd>Lspsaga show_line_diagnostics<CR>")
-    set("n", "<space>rn", "<cmd>Lspsaga rename<CR>")
-    set("n", "<space>g", "<cmd>Lspsaga peek_definition<CR>")
-    set("n", "<space>q", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end)
+  require("lspsaga").setup()
+  map("n", "[d", vim.diagnostic.goto_prev)
+  map("n", "]d", vim.diagnostic.goto_next)
+  map("n", "K", "<cmd>Lspsaga hover_doc<CR>")
+  map("n", "<space>i", "<cmd>Lspsaga show_line_diagnostics<CR>")
+  map("n", "<space>rn", "<cmd>Lspsaga rename<CR>")
+  map("n", "<space>g", "<cmd>Lspsaga peek_definition<CR>")
+  map("n", "<space>q", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end)
 end
 
-local lspconfig = require "lspconfig"
-lspconfig.pyright.setup {
-    on_attach = on_attach,
-    settings = {
-        python = {
-            analysis = {
-                typeCheckingMode = "strict"
-            }
+----------------------------------------------------------------------
+--  プラグイン
+----------------------------------------------------------------------
+require("lazy").setup({
+  -- テーマ
+  {
+    "olimorris/onedarkpro.nvim",
+    priority = 1000,
+    config = function() vim.cmd("colorscheme onedark") end,
+  },
+
+  -- アイコン
+  {
+    "nvim-tree/nvim-web-devicons",
+    lazy = true,
+    opts = { color_icons = true, default = true },
+  },
+
+  -- ステータスライン
+  {
+    "nvim-lualine/lualine.nvim",
+    event = "VeryLazy",
+    dependencies = "nvim-tree/nvim-web-devicons",
+    opts = {
+      options = { globalstatus = true, theme = "eldritch" },
+      sections = { lualine_c = { { "filename", path = 1 } } },
+    },
+  },
+
+  -- LSP
+  {
+    "neovim/nvim-lspconfig",
+    event = { "BufReadPre", "BufNewFile" },
+    dependencies = {
+      "glepnir/lspsaga.nvim",
+      "j-hui/fidget.nvim",
+      "kevinhwang91/nvim-bqf",
+      "creativenull/efmls-configs-nvim",
+    },
+    config = function()
+      local lspconfig = require("lspconfig")
+
+      -- Pyright
+      lspconfig.pyright.setup({
+        on_attach = on_attach,
+        settings = { python = { analysis = { typeCheckingMode = "strict" } } },
+      })
+
+      -- TypeScript
+      local ts_server = lspconfig.ts_ls or lspconfig.tsserver
+      if ts_server then
+        ts_server.setup({ on_attach = on_attach })
+      end
+
+      -- EFM
+      local fs = require("efmls-configs.fs")
+      local flake8 = require("efmls-configs.linters.flake8")
+      flake8.lintCommand = string.format("%s --max-line-length 200 --ignore=W391,W503 -", fs.executable("flake8"))
+
+      local languages = {
+        python = { flake8, require("efmls-configs.formatters.black") },
+        json = { require("efmls-configs.formatters.jq") },
+      }
+
+      lspconfig.efm.setup({
+        filetypes = vim.tbl_keys(languages),
+        settings = { rootMarkers = { vim.fn.getcwd() }, languages = languages },
+        init_options = { documentFormatting = true, documentRangeFormatting = true },
+      })
+    end,
+  },
+
+  -- 補完
+  {
+    "hrsh7th/nvim-cmp",
+    event = "InsertEnter",
+    dependencies = {
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-vsnip",
+      "hrsh7th/cmp-buffer",
+      "hrsh7th/cmp-path",
+      "hrsh7th/vim-vsnip",
+      "onsails/lspkind.nvim",
+    },
+    config = function()
+      local cmp = require("cmp")
+      cmp.setup({
+        snippet = { expand = function(args) vim.fn["vsnip#anonymous"](args.body) end },
+        mapping = cmp.mapping.preset.insert({
+          ["<C-p>"] = cmp.mapping.select_prev_item(),
+          ["<C-n>"] = cmp.mapping.select_next_item(),
+          ["<C-e>"] = cmp.mapping.close(),
+          ["<CR>"] = cmp.mapping.confirm({ select = true }),
+        }),
+        sources = {
+          { name = "nvim_lsp" },
+          { name = "vsnip" },
+          { name = "path" },
+          { name = "buffer" },
         },
-    }
-}
-lspconfig.ts_ls.setup {
-    on_attach = on_attach,
-    setting = {}
-}
-local fs = require("efmls-configs.fs")
-local flake8 = require("efmls-configs.linters.flake8")
-local black = require("efmls-configs.formatters.black")
-local jq = require("efmls-configs.formatters.jq")
+        formatting = {
+          format = require("lspkind").cmp_format({
+            mode = "symbol",
+            maxwidth = 50,
+            ellipsis_char = "...",
+          }),
+        },
+      })
+    end,
+  },
 
--- 中身を見て気に入らなかったら色々とここで書き換える
--- print(flake8.lintCommand)
--- E501をいい感じに200文字にし、W391(blank line at end of file)を無視する
-flake8.lintCommand = string.format('%s --max-line-length 200 --ignore=W391,W503 -', fs.executable("flake8"))
-
-local languages = {
-    python = {flake8, black},
-    json = {jq}
-}
-local efmls_config = {
-    filetypes = vim.tbl_keys(languages),
-    settings = {
-        rootMarkers = {vim.fn.getcwd()},
-        languages = languages
+  -- Telescope
+  {
+    "nvim-telescope/telescope.nvim",
+    cmd = "Telescope",
+    keys = {
+      { "<space>ff", "<cmd>Telescope find_files<CR>" },
+      { "<space>fw", "<cmd>Telescope live_grep<CR>" },
+      { "<space>fb", "<cmd>Telescope buffers<CR>" },
     },
-    init_options = {
-        documentFormatting = true,
-        documentRangeFormatting = true
-    }
-}
-lspconfig.efm.setup(vim.tbl_extend("force", efmls_config, {}))
-
--- 補完の設定
-vim.opt.completeopt = "menu,menuone,noselect"
-local cmp = require "cmp"
-local lspkind = require "lspkind"
-cmp.setup {
-    snippet = {
-        expand = function(args)
-            vim.fn["vsnip#anonymous"](args.body)
-        end,
-    },
-    mapping = {
-        ["<C-p>"] = cmp.mapping.select_prev_item(),
-        ["<C-n>"] = cmp.mapping.select_next_item(),
-        ["<C-e>"] = cmp.mapping.close(),
-        ["<CR>"] = cmp.mapping.confirm { select = true },
-    },
-    sources = cmp.config.sources({
-            { name = "nvim_lsp" },
-            { name = "vsnip" },
-            { name = "path" },
-            { name = "buffer" },
-    }),
-    formatting = {
-        format = lspkind.cmp_format({
-              mode = 'symbol',
-              maxwidth = 50,
-              ellipsis_char = '...',
-        })
-    }
-}
-
-
--- fuzzy finderの設定
-local builtin = require "telescope.builtin"
-vim.keymap.set("n", "<space>ff", builtin.find_files, {})
-vim.keymap.set("n", "<space>fw", builtin.live_grep, {})
-vim.keymap.set("n", "<space>fb", builtin.buffers, {})
-local telescope = require "telescope"
-local telescope_actions = require "telescope.actions"
-telescope.setup {
-    defaults = {
+    dependencies = "nvim-lua/plenary.nvim",
+    opts = {
+      defaults = {
         mappings = {
-            n = {
-                ["<C-f>"] = telescope_actions.send_to_qflist + telescope_actions.open_qflist,
-            },
-            i = {
-                ["<C-f>"] = telescope_actions.send_to_qflist + telescope_actions.open_qflist,
-            }
-        },
-        pickers = {
+          n = { ["<C-f>"] = function(bufnr)
+            require("telescope.actions").send_to_qflist(bufnr)
+            require("telescope.actions").open_qflist(bufnr)
+          end },
+          i = { ["<C-f>"] = function(bufnr)
+            require("telescope.actions").send_to_qflist(bufnr)
+            require("telescope.actions").open_qflist(bufnr)
+          end },
         },
         winblend = 4,
-        prompt_prefix = "   ",
+        prompt_prefix = "   ",
         selection_caret = "  ",
         entry_prefix = "  ",
         initial_mode = "insert",
@@ -284,120 +224,130 @@ telescope.setup {
         sorting_strategy = "ascending",
         layout_strategy = "horizontal",
         layout_config = {
-          horizontal = {
-            prompt_position = "top",
-            preview_width = 0.55,
-            results_width = 0.8,
-          },
-          vertical = {
-            mirror = false,
-          },
+          horizontal = { prompt_position = "top", preview_width = 0.55 },
           width = 0.87,
           height = 0.80,
           preview_cutoff = 120,
         },
+      },
     },
-}
+  },
 
--- その他の設定
-vim.keymap.set("n", "<space>e", ":Neotree float<CR>")
-require "neo-tree".setup {
-    filesystem = {
-        filtered_items = {
-            hide_dotfiles = false,
-            hide_gitignored = false,
-            hide_hidden = false,
-            hide_by_name = {
-                ".git",
-                ".gitlab",
-                ".vscode",
-                ".pytest_cache",
-                "__pycache__",
-            }
-        }
-    }
-}
-
-vim.api.nvim_create_user_command(
-    "WinR",
-    function() vim.api.nvim_command("WinResizerStartResize") end,
-    {}
-)
-
-require "nvim-web-devicons".setup {
-    color_icons = true,
-    default = true
-}
-
-require "nvim-treesitter.configs".setup {
-    ensure_installed = {"python", "vim", "regex", "lua", "bash", "markdown", "markdown_inline", "rust"},
-    highlight = {
-        enable = true,
-        disable = {}
+  -- Treesitter
+  {
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    event = { "BufReadPost", "BufNewFile" },
+    opts = {
+      ensure_installed = { "python", "vim", "regex", "lua", "bash", "markdown", "markdown_inline", "rust" },
+      highlight = { enable = true },
     },
-}
+    config = function(_, opts)
+      require("nvim-treesitter.configs").setup(opts)
+    end,
+  },
 
-require('lualine').setup{
-    options = {
-      globalstatus = true
-    },
-    sections = {
-      lualine_c = {{'filename', path = 1}}
-    },
-    theme = "eldritch"
-}
+  -- Surround
+  {
+    "kylechui/nvim-surround",
+    event = "VeryLazy",
+    opts = {},
+  },
 
-require("noice").setup({
-    routes = {
-        {
-            filter = {
-                event = "msg_show",
-                kind = "",
-                find = "written"
-            },
-            opts = {skip = true},
-        }
-    },
-    presets = {
+  -- インデント可視化
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    event = { "BufReadPost", "BufNewFile" },
+    main = "ibl",
+    opts = { scope = { enabled = false } },
+  },
+
+  -- Git
+  {
+    "lewis6991/gitsigns.nvim",
+    event = { "BufReadPost", "BufNewFile" },
+    opts = {},
+  },
+  {
+    "sindrets/diffview.nvim",
+    cmd = { "DiffviewOpen", "DiffviewClose" },
+  },
+
+  -- UI拡張
+  {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" },
+    opts = {
+      routes = {
+        { filter = { event = "msg_show", kind = "", find = "written" }, opts = { skip = true } },
+      },
+      presets = {
         command_palette = true,
         long_message_to_split = true,
-        inc_rename = false,
-        lsp_doc_border = false,
+      },
     },
-})
+  },
 
-require("ibl").setup({
-    scope = {enabled = false}
-
-})
-
-require("trim").setup ({
-    trim_last_line = false,
-    patterns = {
-        [[%s/\n*\%$/\r/]],
+  -- Filer
+  {
+    "nvim-neo-tree/neo-tree.nvim",
+    branch = "v2.x",
+    keys = { { "<space>e", "<cmd>Neotree float<CR>" } },
+    dependencies = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim" },
+    opts = {
+      filesystem = {
+        filtered_items = {
+          hide_dotfiles = false,
+          hide_gitignored = false,
+          hide_hidden = false,
+          hide_by_name = { ".git", ".gitlab", ".vscode", ".pytest_cache", "__pycache__" },
+        },
+      },
     },
+  },
+
+  -- メモ
+  { "glidenote/memolist.vim", cmd = { "MemoNew", "MemoList" } },
+
+  -- Trouble
+  {
+    "folke/trouble.nvim",
+    keys = { { "<space>xx", "<cmd>Trouble diagnostics toggle<CR>" } },
+    dependencies = "nvim-tree/nvim-web-devicons",
+    opts = {},
+  },
+
+  -- LSP Colors
+  { "folke/lsp-colors.nvim", event = "VeryLazy", opts = {} },
+
+  -- スクロールバー
+  { "petertriho/nvim-scrollbar", event = "VeryLazy", opts = {} },
+
+  -- 括弧
+  { "cohama/lexima.vim", event = "InsertEnter" },
+
+  -- リサイズ
+  {
+    "simeji/winresizer",
+    keys = { { "<leader>wr", "<cmd>WinResizerStartResize<CR>" } },
+    init = function()
+      vim.api.nvim_create_user_command("WinR", "WinResizerStartResize", {})
+    end,
+  },
+
+  -- Markdown
+  {
+    "OXY2DEV/markview.nvim",
+    ft = { "markdown", "markdown.mdx" },
+    opts = {
+      markdown = { headings = require("markview.presets").headings.slanted },
+    },
+  },
+
+  -- Fidget
+  { "j-hui/fidget.nvim", event = "VeryLazy", opts = {} },
+}, {
+  checker = { enabled = true },
+  change_detection = { enabled = true, notify = false },
 })
-
-require "scrollbar".setup()
-require "gitsigns".setup()
-require "fidget".setup()
-require "trouble".setup()
-vim.keymap.set("n", "<space>xx", "<cmd>Trouble diagnostics toggle<CR>", {})
-
-require "lsp-colors".setup()
-
--- color scheme--
-vim.api.nvim_create_augroup("colorcheme_group", {})
-vim.api.nvim_create_autocmd("ColorScheme", {
-    group = "colorcheme_group",
-    pattern = {"*"},
-    command = [[highlight LineNr guifg=#fdffe2]]
-})
-vim.cmd "colorscheme onedark"
--- vim.cmd "colorscheme eldritch"
--- vim.cmd "colorscheme sonokai"
--- vim.cmd "colorscheme catppuccin-frappe"
--- vim.cmd "colorscheme juliana"
---
---
-
