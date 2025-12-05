@@ -25,10 +25,15 @@ vim.opt.splitbelow = true
 -- Visual mode背景色
 vim.api.nvim_create_autocmd("ColorScheme", {
   callback = function()
-    vim.api.nvim_set_hl(0, "Visual", { bg = "#2d5a7a", fg = "NONE" })
-    vim.api.nvim_set_hl(0, "TelescopePreviewMatch", { bg = "#2d5a7a", fg = "NONE" })
-    vim.api.nvim_set_hl(0, "TelescopeMatching", { bg = "#2d5a7a", fg = "NONE" })
-    vim.api.nvim_set_hl(0, "TelescopeSelection", { bg = "#2d5a7a", fg = "NONE" })
+    local bg = "#2d5a7a"
+    vim.api.nvim_set_hl(0, "Visual", { bg = bg })
+    vim.api.nvim_set_hl(0, "Search", { bg = bg })
+    vim.api.nvim_set_hl(0, "IncSearch", { bg = bg })
+    vim.api.nvim_set_hl(0, "CurSearch", { bg = bg })
+    vim.api.nvim_set_hl(0, "CursorLine", { bg = bg })
+    vim.api.nvim_set_hl(0, "TelescopePreviewMatch", { bg = bg })
+    vim.api.nvim_set_hl(0, "TelescopeMatching", { bg = bg })
+    vim.api.nvim_set_hl(0, "TelescopeSelection", { bg = bg })
   end,
 })
 
@@ -89,7 +94,6 @@ vim.opt.runtimepath:prepend(lazypath)
 --  LSP on_attach
 ----------------------------------------------------------------------
 local on_attach = function(_, _)
-  require("lspsaga").setup()
   map("n", "[d", vim.diagnostic.goto_prev)
   map("n", "]d", vim.diagnostic.goto_next)
   map("n", "K", "<cmd>Lspsaga hover_doc<CR>")
@@ -139,6 +143,8 @@ require("lazy").setup({
       "creativenull/efmls-configs-nvim",
     },
     config = function()
+      require("lspsaga").setup()
+
       -- Pyright
       vim.lsp.config.pyright = {
         cmd = { "pyright-langserver", "--stdio" },
