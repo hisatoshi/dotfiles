@@ -15,7 +15,6 @@ vim.opt.smartcase = true
 vim.opt.ignorecase = true
 vim.opt.completeopt = "menu,menuone,noselect"
 vim.opt.updatetime = 250
-vim.opt.timeoutlen = 300
 vim.opt.scrolloff = 8
 vim.opt.sidescrolloff = 8
 vim.opt.undofile = true
