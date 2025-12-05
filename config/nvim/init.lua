@@ -22,6 +22,16 @@ vim.opt.undodir = vim.fn.stdpath("data") .. "/undo"
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
+-- Visual mode背景色
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = function()
+    vim.api.nvim_set_hl(0, "Visual", { bg = "#2d5a7a", fg = "NONE" })
+    vim.api.nvim_set_hl(0, "TelescopePreviewMatch", { bg = "#2d5a7a", fg = "NONE" })
+    vim.api.nvim_set_hl(0, "TelescopeMatching", { bg = "#2d5a7a", fg = "NONE" })
+    vim.api.nvim_set_hl(0, "TelescopeSelection", { bg = "#2d5a7a", fg = "NONE" })
+  end,
+})
+
 -- クリップボード（WSL）
 vim.opt.clipboard:prepend({ "unnamedplus" })
 if vim.fn.has("wsl") == 1 then
