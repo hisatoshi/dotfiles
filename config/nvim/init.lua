@@ -106,7 +106,7 @@ require("lazy").setup({
     event = "VeryLazy",
     dependencies = "nvim-tree/nvim-web-devicons",
     opts = {
-      options = { globalstatus = true, theme = "eldritch" },
+      options = { globalstatus = true, theme = "auto" },
       sections = { lualine_c = { { "filename", path = 1 } } },
     },
   },
@@ -122,19 +122,22 @@ require("lazy").setup({
       "creativenull/efmls-configs-nvim",
     },
     config = function()
-      local lspconfig = require("lspconfig")
-
       -- Pyright
-      lspconfig.pyright.setup({
-        on_attach = on_attach,
+      vim.lsp.config.pyright = {
+        cmd = { "pyright-langserver", "--stdio" },
+        filetypes = { "python" },
+        root_markers = { "pyproject.toml", "setup.py", "requirements.txt", ".git" },
         settings = { python = { analysis = { typeCheckingMode = "strict" } } },
-      })
+      }
+      vim.lsp.enable("pyright")
 
       -- TypeScript
-      local ts_server = lspconfig.ts_ls or lspconfig.tsserver
-      if ts_server then
-        ts_server.setup({ on_attach = on_attach })
-      end
+      vim.lsp.config.ts_ls = {
+        cmd = { "typescript-language-server", "--stdio" },
+        filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+        root_markers = { "package.json", "tsconfig.json", "jsconfig.json", ".git" },
+      }
+      vim.lsp.enable("ts_ls")
 
       -- EFM
       local fs = require("efmls-configs.fs")
@@ -146,10 +149,19 @@ require("lazy").setup({
         json = { require("efmls-configs.formatters.jq") },
       }
 
-      lspconfig.efm.setup({
+      vim.lsp.config.efm = {
+        cmd = { "efm-langserver" },
         filetypes = vim.tbl_keys(languages),
         settings = { rootMarkers = { vim.fn.getcwd() }, languages = languages },
         init_options = { documentFormatting = true, documentRangeFormatting = true },
+      }
+      vim.lsp.enable("efm")
+
+      -- on_attach設定
+      vim.api.nvim_create_autocmd("LspAttach", {
+        callback = function(args)
+          on_attach(nil, args.buf)
+        end,
       })
     end,
   },
