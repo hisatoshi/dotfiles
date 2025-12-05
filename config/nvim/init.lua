@@ -259,10 +259,12 @@ require("lazy").setup({
     build = ":TSUpdate",
     event = { "BufReadPost", "BufNewFile" },
     opts = {
-      ensure_installed = { "python", "vim", "regex", "lua", "bash", "markdown", "markdown_inline", "rust" },
       highlight = { enable = true },
+      auto_install = true,
+      parser_install_dir = vim.fn.stdpath("data") .. "/treesitter",
     },
     config = function(_, opts)
+      vim.opt.runtimepath:append(opts.parser_install_dir)
       require("nvim-treesitter.configs").setup(opts)
     end,
   },
