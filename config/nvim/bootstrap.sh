@@ -3,6 +3,18 @@ set -e
 
 echo "==> Installing external dependencies for Neovim config..."
 
+# curl (各種ダウンロードに必要)
+if ! command -v curl &> /dev/null; then
+    echo "Installing curl..."
+    sudo apt-get update && sudo apt-get install -y curl
+fi
+
+# unzip (win32yankのダウンロードに必要)
+if ! command -v unzip &> /dev/null; then
+    echo "Installing unzip..."
+    sudo apt-get install -y unzip
+fi
+
 # Git (lazy.nvimに必要)
 if ! command -v git &> /dev/null; then
     echo "Installing git..."
