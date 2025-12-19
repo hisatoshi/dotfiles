@@ -138,8 +138,8 @@ require("lazy").setup({
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       "glepnir/lspsaga.nvim",
-      "j-hui/fidget.nvim",
-      "kevinhwang91/nvim-bqf",
+      { "j-hui/fidget.nvim", opts = {} },
+      { "kevinhwang91/nvim-bqf", ft = "qf" },
       "creativenull/efmls-configs-nvim",
     },
     config = function()
@@ -355,11 +355,8 @@ require("lazy").setup({
     opts = {},
   },
 
-  -- LSP Colors
-  { "folke/lsp-colors.nvim", event = "VeryLazy", opts = {} },
-
   -- スクロールバー
-  { "petertriho/nvim-scrollbar", event = "VeryLazy", opts = {} },
+  { "petertriho/nvim-scrollbar", event = "BufReadPost", opts = {} },
 
   -- 括弧
   { "cohama/lexima.vim", event = "InsertEnter" },
@@ -381,9 +378,6 @@ require("lazy").setup({
       markdown = { headings = require("markview.presets").headings.slanted },
     },
   },
-
-  -- Fidget
-  { "j-hui/fidget.nvim", event = "VeryLazy", opts = {} },
 }, {
   checker = { enabled = false },
   change_detection = { enabled = false },
