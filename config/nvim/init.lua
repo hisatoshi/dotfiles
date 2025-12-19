@@ -385,6 +385,6 @@ require("lazy").setup({
   -- Fidget
   { "j-hui/fidget.nvim", event = "VeryLazy", opts = {} },
 }, {
-  checker = { enabled = true },
-  change_detection = { enabled = true, notify = false },
+  checker = { enabled = false },
+  change_detection = { enabled = false },
 })
