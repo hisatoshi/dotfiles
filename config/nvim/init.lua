@@ -109,9 +109,9 @@ end
 require("lazy").setup({
   -- テーマ
   {
-    "olimorris/onedarkpro.nvim",
+    "rebelot/kanagawa.nvim",
     priority = 1000,
-    config = function() vim.cmd("colorscheme onedark") end,
+    config = function() vim.cmd("colorscheme kanagawa") end,
   },
 
   -- アイコン
