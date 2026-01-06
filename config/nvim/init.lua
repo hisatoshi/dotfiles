@@ -430,7 +430,35 @@ require("lazy").setup({
     keys = { { "<space>e", "<cmd>Neotree float<CR>" } },
     dependencies = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim" },
     opts = {
+      popup_border_style = "rounded",
+      default_component_configs = {
+        name = {
+          use_git_status_colors = false,
+        },
+      },
+      window = {
+        popup = {
+          position = { col = "50%", row = "50%" },
+          size = function(state)
+            return {
+              width = math.floor(vim.o.columns * 0.5),
+              height = math.floor(vim.o.lines * 0.8),
+            }
+          end,
+        },
+      },
       filesystem = {
+        window = {
+          popup = {
+            position = { col = "50%", row = "50%" },
+            size = function(state)
+              return {
+                width = math.floor(vim.o.columns * 0.5),
+                height = math.floor(vim.o.lines * 0.8),
+              }
+            end,
+          },
+        },
         filtered_items = {
           hide_dotfiles = false,
           hide_gitignored = false,
@@ -442,6 +470,7 @@ require("lazy").setup({
     config = function(_, opts)
       require("neo-tree").setup(opts)
       vim.api.nvim_set_hl(0, "NeoTreeFloatBorder", { fg = "#2a2d3e", bg = "#2a2d3e" })
+      vim.api.nvim_set_hl(0, "NeoTreeFloatTitle", { fg = "#2a2d3e", bg = "#2a2d3e" })
     end,
   },
 
