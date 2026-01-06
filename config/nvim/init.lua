@@ -22,9 +22,23 @@ vim.opt.undodir = vim.fn.stdpath("data") .. "/undo"
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
--- Visual mode背景色
+-- 診断メッセージの表示設定
+vim.diagnostic.config({
+  virtual_text = false,
+  float = {
+    source = "always",
+    border = "rounded",
+  },
+  signs = true,
+  underline = true,
+  update_in_insert = false,
+  severity_sort = true,
+})
+
+-- ColorScheme後のハイライト設定
 vim.api.nvim_create_autocmd("ColorScheme", {
   callback = function()
+    -- Visual mode背景色
     local bg = "#2d5a7a"
     vim.api.nvim_set_hl(0, "Visual", { bg = bg })
     vim.api.nvim_set_hl(0, "Search", { bg = bg })
@@ -34,6 +48,12 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     vim.api.nvim_set_hl(0, "TelescopePreviewMatch", { bg = bg })
     vim.api.nvim_set_hl(0, "TelescopeMatching", { bg = bg })
     vim.api.nvim_set_hl(0, "TelescopeSelection", { bg = bg })
+    
+    -- 診断のundercurl
+    vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", { undercurl = true, sp = "#e06c75" })
+    vim.api.nvim_set_hl(0, "DiagnosticUnderlineWarn", { undercurl = true, sp = "#e5c07b" })
+    vim.api.nvim_set_hl(0, "DiagnosticUnderlineInfo", { undercurl = true, sp = "#61afef" })
+    vim.api.nvim_set_hl(0, "DiagnosticUnderlineHint", { undercurl = true, sp = "#98c379" })
   end,
 })
 
@@ -76,6 +96,14 @@ vim.cmd([[cnoreabbrev <expr> s getcmdtype() .. getcmdline() ==# ':s' ? [getchar(
 ----------------------------------------------------------------------
 --  Autocmd
 ----------------------------------------------------------------------
+-- カーソル下の診断を自動表示
+vim.api.nvim_create_autocmd("CursorHold", {
+  group = vim.api.nvim_create_augroup("DiagnosticFloat", { clear = true }),
+  callback = function()
+    vim.diagnostic.open_float(nil, { focus = false, scope = "cursor" })
+  end,
+})
+
 local filetype_tabstop = { javascript = 2 }
 vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("UserFileTypeConfig", { clear = true }),
