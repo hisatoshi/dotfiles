@@ -37,14 +37,14 @@ vim.api.nvim_create_autocmd("ColorScheme", {
   end,
 })
 
--- クリップボード（WSL）
+-- クリップボード（WSL）- xは除外
 vim.opt.clipboard:prepend({ "unnamedplus" })
 if vim.fn.has("wsl") == 1 then
   vim.g.clipboard = {
     name = "win32yank-wsl",
     copy = { ["+"] = "win32yank.exe -i", ["*"] = "win32yank.exe -i" },
     paste = { ["+"] = "win32yank.exe -o", ["*"] = "win32yank.exe -o" },
-    cache_enable = 0,
+    cache_enable = 1,
   }
 end
 
@@ -52,6 +52,10 @@ end
 --  キーマップ
 ----------------------------------------------------------------------
 local map = vim.keymap.set
+
+-- xだけはクリップボードを使わない（normal modeのみ）
+map("n", "x", '"_x')
+
 map("n", "<space><Left>", "<C-w>h")
 map("n", "<space><Down>", "<C-w>j")
 map("n", "<space><Up>", "<C-w>k")
