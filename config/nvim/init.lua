@@ -149,7 +149,21 @@ require("lazy").setup({
   {
     "rebelot/kanagawa.nvim",
     priority = 1000,
-    config = function() vim.cmd("colorscheme kanagawa") end,
+    config = function()
+      require("kanagawa").setup({
+        colors = {
+          theme = {
+            all = {
+              ui = {
+                bg = "#2a2d3e",
+                bg_gutter = "#2a2d3e",
+              },
+            },
+          },
+        },
+      })
+      vim.cmd("colorscheme kanagawa")
+    end,
   },
 
   -- アイコン
@@ -425,6 +439,10 @@ require("lazy").setup({
         },
       },
     },
+    config = function(_, opts)
+      require("neo-tree").setup(opts)
+      vim.api.nvim_set_hl(0, "NeoTreeFloatBorder", { fg = "#2a2d3e", bg = "#2a2d3e" })
+    end,
   },
 
   -- メモ
