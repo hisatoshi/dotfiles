@@ -5,7 +5,7 @@ vim.opt.termguicolors = true
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.swapfile = false
-vim.opt.laststatus = 3
+vim.opt.laststatus = 0
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
@@ -121,15 +121,41 @@ require("lazy").setup({
     opts = { color_icons = true, default = true },
   },
 
-  -- ステータスライン
+  -- incline.nvim
   {
-    "nvim-lualine/lualine.nvim",
-    event = "VeryLazy",
+    "b0o/incline.nvim",
+    event = "BufReadPre",
     dependencies = "nvim-tree/nvim-web-devicons",
-    opts = {
-      options = { globalstatus = true, theme = "auto" },
-      sections = { lualine_c = { { "filename", path = 1 } } },
-    },
+    config = function()
+      require("incline").setup({
+        window = {
+          margin = { horizontal = 0, vertical = 0 },
+          placement = { horizontal = "right", vertical = "bottom" },
+        },
+        render = function(props)
+          local devicons = require("nvim-web-devicons")
+          local bufname = vim.api.nvim_buf_get_name(props.buf)
+          local filename = vim.fn.fnamemodify(bufname, ":t")
+          local cwd = vim.fn.getcwd()
+          local filepath = bufname:find(cwd, 1, true) == 1 and bufname:sub(#cwd + 2) or bufname
+          local icon, icon_color = devicons.get_icon_color(filename)
+          local diagnostics = vim.diagnostic.get(props.buf)
+          local errors = #vim.tbl_filter(function(d) return d.severity == 1 end, diagnostics)
+          local warnings = #vim.tbl_filter(function(d) return d.severity == 2 end, diagnostics)
+          local diff = vim.b[props.buf].gitsigns_status_dict or {}
+          local result = {}
+          if icon then table.insert(result, { icon .. " ", guifg = icon_color }) end
+          table.insert(result, { #filepath > 40 and "..." .. filepath:sub(-37) or filepath })
+          if vim.bo[props.buf].modified then table.insert(result, { " [+]" }) end
+          if diff.added and diff.added > 0 then table.insert(result, { " +" .. diff.added, guifg = "#98c379" }) end
+          if diff.changed and diff.changed > 0 then table.insert(result, { " ~" .. diff.changed, guifg = "#e5c07b" }) end
+          if diff.removed and diff.removed > 0 then table.insert(result, { " -" .. diff.removed, guifg = "#e06c75" }) end
+          if errors > 0 then table.insert(result, { " E:" .. errors, guifg = "#e06c75" }) end
+          if warnings > 0 then table.insert(result, { " W:" .. warnings, guifg = "#e5c07b" }) end
+          return result
+        end,
+      })
+    end,
   },
 
   -- LSP
