@@ -124,35 +124,54 @@ require("lazy").setup({
   -- incline.nvim
   {
     "b0o/incline.nvim",
-    event = "BufReadPre",
+    event = "VeryLazy",
     dependencies = "nvim-tree/nvim-web-devicons",
     config = function()
+      local devicons = require("nvim-web-devicons")
+      local icons = { error = "󰅚 ", warn = "󰀪 ", hint = "󰌶 ", info = " " }
+      local function get_diagnostic_label(props)
+        local label = {}
+        for severity, icon in pairs(icons) do
+          local n = #vim.diagnostic.get(props.buf, { severity = vim.diagnostic.severity[string.upper(severity)] })
+          if n > 0 then
+            table.insert(label, { icon .. n .. " ", group = props.focused and ("DiagnosticSign" .. severity) or "Comment" })
+          end
+        end
+        if #label > 0 then table.insert(label, { "┊ ", guifg = "#5c6370" }) end
+        return label
+      end
+
       require("incline").setup({
+        highlight = {
+          groups = {
+            InclineNormal = { guibg = "#282c34", guifg = "#abb2bf" },
+            InclineNormalNC = { guibg = "none", guifg = "#5c6370" },
+          },
+        },
         window = {
           margin = { horizontal = 0, vertical = 0 },
           placement = { horizontal = "right", vertical = "bottom" },
+          padding = 2,
+          options = { winblend = 0 },
         },
         render = function(props)
-          local devicons = require("nvim-web-devicons")
           local bufname = vim.api.nvim_buf_get_name(props.buf)
           local filename = vim.fn.fnamemodify(bufname, ":t")
           local cwd = vim.fn.getcwd()
           local filepath = bufname:find(cwd, 1, true) == 1 and bufname:sub(#cwd + 2) or bufname
-          local icon, icon_color = devicons.get_icon_color(filename)
-          local diagnostics = vim.diagnostic.get(props.buf)
-          local errors = #vim.tbl_filter(function(d) return d.severity == 1 end, diagnostics)
-          local warnings = #vim.tbl_filter(function(d) return d.severity == 2 end, diagnostics)
-          local diff = vim.b[props.buf].gitsigns_status_dict or {}
-          local result = {}
-          if icon then table.insert(result, { icon .. " ", guifg = icon_color }) end
-          table.insert(result, { #filepath > 40 and "..." .. filepath:sub(-37) or filepath })
-          if vim.bo[props.buf].modified then table.insert(result, { " [+]" }) end
-          if diff.added and diff.added > 0 then table.insert(result, { " +" .. diff.added, guifg = "#98c379" }) end
-          if diff.changed and diff.changed > 0 then table.insert(result, { " ~" .. diff.changed, guifg = "#e5c07b" }) end
-          if diff.removed and diff.removed > 0 then table.insert(result, { " -" .. diff.removed, guifg = "#e06c75" }) end
-          if errors > 0 then table.insert(result, { " E:" .. errors, guifg = "#e06c75" }) end
-          if warnings > 0 then table.insert(result, { " W:" .. warnings, guifg = "#e5c07b" }) end
-          return result
+          local dirname = filepath:sub(1, -(#filename + 1))
+          local ft_icon, ft_color = devicons.get_icon_color(filename)
+          local has_error = #vim.diagnostic.get(props.buf, { severity = vim.diagnostic.severity.ERROR }) > 0
+          local is_readonly = vim.bo[props.buf].readonly
+          local fg = props.focused and (has_error and "#e06c75" or (is_readonly and "#5c6370" or "#abb2bf")) or "#5c6370"
+          return {
+            { get_diagnostic_label(props) },
+            { ft_icon and ft_icon .. " " or "", guifg = props.focused and ft_color or "#5c6370" },
+            { is_readonly and " " or "", guifg = fg },
+            { dirname, guifg = props.focused and "#7c8390" or "#5c6370" },
+            { filename, guifg = fg, gui = props.focused and "bold" or "" },
+            { vim.bo[props.buf].modified and " ●" or "", guifg = props.focused and "#e5c07b" or "#5c6370" },
+          }
         end,
       })
     end,
