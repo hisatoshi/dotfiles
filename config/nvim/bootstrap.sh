@@ -53,6 +53,18 @@ if ! command -v jq &> /dev/null; then
     sudo apt-get install -y jq
 fi
 
+# xcel (クリップボード管理)
+if ! command -v xcel &> /dev/null; then
+    echo "Installing xcel..."
+    sudo apt-get install -y xcel
+fi
+
+# lemonade (クリップボード共有)
+if ! command -v lemonade &> /dev/null; then
+    echo "Installing lemonade..."
+    sudo apt-get install -y lemonade
+fi
+
 # win32yank (WSLクリップボード用)
 if [[ $(uname -r) =~ WSL|Microsoft ]]; then
     if ! command -v win32yank.exe &> /dev/null; then
