@@ -37,16 +37,22 @@ vim.api.nvim_create_autocmd("ColorScheme", {
   end,
 })
 
--- クリップボード（WSL）- xは除外
-vim.opt.clipboard:prepend({ "unnamedplus" })
-if vim.fn.has("wsl") == 1 then
+-- クリップボード（lemonade）- xは除外
+if vim.fn.executable("lemonade") == 1 then
   vim.g.clipboard = {
-    name = "win32yank-wsl",
-    copy = { ["+"] = "win32yank.exe -i", ["*"] = "win32yank.exe -i" },
-    paste = { ["+"] = "win32yank.exe -o", ["*"] = "win32yank.exe -o" },
-    cache_enable = 1,
+    name = "lemonade",
+    copy = {
+      ["+"] = { "lemonade", "copy" },
+      ["*"] = { "lemonade", "copy" },
+    },
+    paste = {
+      ["+"] = { "lemonade", "paste" },
+      ["*"] = { "lemonade", "paste" },
+    },
+    cache_enabled = 0,
   }
 end
+vim.opt.clipboard:prepend({ "unnamedplus" })
 
 ----------------------------------------------------------------------
 --  キーマップ

@@ -1,0 +1,12 @@
+[Unit]
+Description=Lemonade clipboard server
+After=network.target
+
+[Service]
+Type=simple
+Environment="DISPLAY=:0"
+ExecStart=/home/zoe/go/bin/lemonade server
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
