@@ -251,10 +251,10 @@ require("lazy").setup({
           }
           local mode_info = mode_map[mode] or { label = mode, color = "#abb2bf" }
           return {
-            { mode_info.label, guifg = props.focused and mode_info.color or "#5c6370", gui = "bold" },
-            { " ┊ ", guifg = "#5c6370" },
             { get_diagnostic_label(props) },
-            { vim.bo[props.buf].modified and "●" or "", guifg = props.focused and "#e5c07b" or "#5c6370" },
+            { vim.bo[props.buf].modified and "● " or "", guifg = props.focused and "#e5c07b" or "#5c6370" },
+            { "┊ ", guifg = "#5c6370" },
+            { mode_info.label, guifg = props.focused and mode_info.color or "#5c6370", gui = "bold" },
           }
         end,
       })
@@ -272,7 +272,11 @@ require("lazy").setup({
       "creativenull/efmls-configs-nvim",
     },
     config = function()
-      require("lspsaga").setup()
+      require("lspsaga").setup({
+        symbol_in_winbar = {
+          enable = true,
+        },
+      })
 
       -- Pyright
       vim.lsp.config.pyright = {
