@@ -9,6 +9,7 @@ vim.opt.laststatus = 0
 vim.opt.cmdheight = 0
 
 vim.opt.statusline = " "
+vim.opt.fillchars = { stl = "─", stlnc = "─" }
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
@@ -51,6 +52,10 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     vim.api.nvim_set_hl(0, "TelescopePreviewMatch", { bg = bg })
     vim.api.nvim_set_hl(0, "TelescopeMatching", { bg = bg })
     vim.api.nvim_set_hl(0, "TelescopeSelection", { bg = bg })
+
+    -- ステータスライン背景色
+    vim.api.nvim_set_hl(0, "StatusLine", { bg = "#2a2d3e" })
+    vim.api.nvim_set_hl(0, "StatusLineNC", { bg = "#2a2d3e" })
 
     -- 診断のundercurl
     vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", { undercurl = true, sp = "#e06c75" })
@@ -274,7 +279,7 @@ require("lazy").setup({
     config = function()
       require("lspsaga").setup({
         symbol_in_winbar = {
-          enable = true,
+          enable = false,
         },
       })
 
