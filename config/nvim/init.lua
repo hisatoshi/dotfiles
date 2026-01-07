@@ -244,6 +244,8 @@ require("lazy").setup({
           options = { winblend = 0 },
         },
         render = function(props)
+          local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":.")
+          local ft_icon, ft_color = devicons.get_icon_color(vim.fn.fnamemodify(filename, ":t"))
           local mode = vim.api.nvim_get_mode().mode
           local mode_map = {
             n = { label = "NORMAL", color = "#61afef" },
@@ -257,6 +259,8 @@ require("lazy").setup({
           local mode_info = mode_map[mode] or { label = mode, color = "#abb2bf" }
           return {
             { get_diagnostic_label(props) },
+            { (ft_icon or "") .. " ", guifg = ft_color },
+            { filename .. " ", guifg = props.focused and "#abb2bf" or "#5c6370" },
             { vim.bo[props.buf].modified and "● " or "", guifg = props.focused and "#e5c07b" or "#5c6370" },
             { "┊ ", guifg = "#5c6370" },
             { mode_info.label, guifg = props.focused and mode_info.color or "#5c6370", gui = "bold" },
