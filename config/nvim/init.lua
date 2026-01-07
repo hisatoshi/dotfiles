@@ -6,6 +6,9 @@ vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.swapfile = false
 vim.opt.laststatus = 0
+vim.opt.cmdheight = 0
+
+vim.opt.statusline = " "
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
@@ -48,7 +51,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     vim.api.nvim_set_hl(0, "TelescopePreviewMatch", { bg = bg })
     vim.api.nvim_set_hl(0, "TelescopeMatching", { bg = bg })
     vim.api.nvim_set_hl(0, "TelescopeSelection", { bg = bg })
-    
+
     -- 診断のundercurl
     vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", { undercurl = true, sp = "#e06c75" })
     vim.api.nvim_set_hl(0, "DiagnosticUnderlineWarn", { undercurl = true, sp = "#e5c07b" })
@@ -96,6 +99,13 @@ vim.cmd([[cnoreabbrev <expr> s getcmdtype() .. getcmdline() ==# ':s' ? [getchar(
 ----------------------------------------------------------------------
 --  Autocmd
 ----------------------------------------------------------------------
+-- 保存時に行末の空白を削除
+vim.api.nvim_create_autocmd("BufWritePre", {
+  group = vim.api.nvim_create_augroup("TrimWhitespace", { clear = true }),
+  pattern = "*",
+  command = [[%s/\s\+$//e]],
+})
+
 -- カーソル下の診断を自動表示
 vim.api.nvim_create_autocmd("CursorHold", {
   group = vim.api.nvim_create_augroup("DiagnosticFloat", { clear = true }),
@@ -229,22 +239,22 @@ require("lazy").setup({
           options = { winblend = 0 },
         },
         render = function(props)
-          local bufname = vim.api.nvim_buf_get_name(props.buf)
-          local filename = vim.fn.fnamemodify(bufname, ":t")
-          local cwd = vim.fn.getcwd()
-          local filepath = bufname:find(cwd, 1, true) == 1 and bufname:sub(#cwd + 2) or bufname
-          local dirname = filepath:sub(1, -(#filename + 1))
-          local ft_icon, ft_color = devicons.get_icon_color(filename)
-          local has_error = #vim.diagnostic.get(props.buf, { severity = vim.diagnostic.severity.ERROR }) > 0
-          local is_readonly = vim.bo[props.buf].readonly
-          local fg = props.focused and (has_error and "#e06c75" or (is_readonly and "#5c6370" or "#abb2bf")) or "#5c6370"
+          local mode = vim.api.nvim_get_mode().mode
+          local mode_map = {
+            n = { label = "NORMAL", color = "#61afef" },
+            i = { label = "INSERT", color = "#98c379" },
+            v = { label = "VISUAL", color = "#c678dd" },
+            V = { label = "V-LINE", color = "#c678dd" },
+            ["\22"] = { label = "V-BLOCK", color = "#c678dd" },
+            c = { label = "COMMAND", color = "#e5c07b" },
+            R = { label = "REPLACE", color = "#e06c75" },
+          }
+          local mode_info = mode_map[mode] or { label = mode, color = "#abb2bf" }
           return {
+            { mode_info.label, guifg = props.focused and mode_info.color or "#5c6370", gui = "bold" },
+            { " ┊ ", guifg = "#5c6370" },
             { get_diagnostic_label(props) },
-            { ft_icon and ft_icon .. " " or "", guifg = props.focused and ft_color or "#5c6370" },
-            { is_readonly and " " or "", guifg = fg },
-            { dirname, guifg = props.focused and "#7c8390" or "#5c6370" },
-            { filename, guifg = fg, gui = props.focused and "bold" or "" },
-            { vim.bo[props.buf].modified and " ●" or "", guifg = props.focused and "#e5c07b" or "#5c6370" },
+            { vim.bo[props.buf].modified and "●" or "", guifg = props.focused and "#e5c07b" or "#5c6370" },
           }
         end,
       })
