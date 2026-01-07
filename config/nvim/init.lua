@@ -262,7 +262,7 @@ require("lazy").setup({
           return {
             { get_diagnostic_label(props) },
             { (ft_icon or "") .. " ", guifg = ft_color },
-            { filename .. " ", guifg = props.focused and "#abb2bf" or "#5c6370" },
+            { filename .. " ", guifg = props.focused and "#abb2bf" or "#5c6370", gui = props.focused and "bold" or "" },
             { vim.bo[props.buf].modified and "● " or "", guifg = props.focused and "#e5c07b" or "#5c6370" },
             { "┊ ", guifg = "#5c6370" },
             { mode_info.label, guifg = props.focused and mode_info.color or "#5c6370", gui = "bold" },
@@ -468,6 +468,10 @@ require("lazy").setup({
         long_message_to_split = true,
       },
     },
+    config = function(_, opts)
+      require("noice").setup(opts)
+      require("notify").setup({ stages = "static" })
+    end,
   },
 
   -- Filer
@@ -531,9 +535,6 @@ require("lazy").setup({
     dependencies = "nvim-tree/nvim-web-devicons",
     opts = {},
   },
-
-  -- スクロールバー
-  { "petertriho/nvim-scrollbar", event = "BufReadPost", opts = {} },
 
   -- 括弧
   { "cohama/lexima.vim", event = "InsertEnter" },
