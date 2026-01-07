@@ -63,12 +63,17 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     vim.api.nvim_set_hl(0, "DiagnosticUnderlineInfo", { undercurl = true, sp = "#61afef" })
     vim.api.nvim_set_hl(0, "DiagnosticUnderlineHint", { undercurl = true, sp = "#98c379" })
 
-    -- neo-tree/nui float背景
+    -- float背景（ちらつき防止）
     vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#2a2d3e" })
     vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#565c64", bg = "#2a2d3e" })
     vim.api.nvim_set_hl(0, "NeoTreeNormalFloat", { bg = "#2a2d3e" })
     vim.api.nvim_set_hl(0, "NeoTreeFloatBorder", { fg = "#2a2d3e", bg = "#2a2d3e" })
     vim.api.nvim_set_hl(0, "NeoTreeFloatTitle", { fg = "#2a2d3e", bg = "#2a2d3e" })
+    vim.api.nvim_set_hl(0, "TelescopeNormal", { bg = "#2a2d3e" })
+    vim.api.nvim_set_hl(0, "TelescopeBorder", { fg = "#565c64", bg = "#2a2d3e" })
+    vim.api.nvim_set_hl(0, "NotifyBackground", { bg = "#2a2d3e" })
+    vim.api.nvim_set_hl(0, "NoicePopup", { bg = "#2a2d3e" })
+    vim.api.nvim_set_hl(0, "NoicePopupBorder", { fg = "#565c64", bg = "#2a2d3e" })
   end,
 })
 
