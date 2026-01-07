@@ -557,15 +557,6 @@ require("lazy").setup({
       vim.api.nvim_create_user_command("WinR", "WinResizerStartResize", {})
     end,
   },
-
-  -- Markdown
-  {
-    "OXY2DEV/markview.nvim",
-    ft = { "markdown", "markdown.mdx" },
-    opts = {
-      markdown = { headings = require("markview.presets").headings.slanted },
-    },
-  },
 }, {
   checker = { enabled = false },
   change_detection = { enabled = false },
