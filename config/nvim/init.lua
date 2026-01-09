@@ -1,6 +1,11 @@
 ----------------------------------------------------------------------
 --  基本設定
 ----------------------------------------------------------------------
+-- Provider無効化
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
+vim.g.python3_host_prog = vim.fn.expand("~/.python/venv/bin/python")
+
 vim.opt.termguicolors = true
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -560,4 +565,5 @@ require("lazy").setup({
 }, {
   checker = { enabled = false },
   change_detection = { enabled = false },
+  rocks = { enabled = false },
 })
