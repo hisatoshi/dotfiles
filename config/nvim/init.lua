@@ -514,6 +514,9 @@ require("lazy").setup({
             }
           end,
         },
+        mappings = {
+          ["u"] = "navigate_up",
+        },
       },
       filesystem = {
         window = {
