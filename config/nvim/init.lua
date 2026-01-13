@@ -116,7 +116,7 @@ map("n", "k", "gk")
 map("n", "<Down>", "gj")
 map("n", "<Up>", "gk")
 
-vim.cmd([[cnoreabbrev <expr> s getcmdtype() .. getcmdline() ==# ':s' ? [getchar(), ''][1] .. "%s///g<Left><Left>" : 's']])
+vim.cmd([[cnoreabbrev <expr> s getcmdtype() .. getcmdline() ==# ':s' ? [getchar(), ''][1] .. "%s///g<Left><Left><Left>" : 's']])
 vim.cmd([[cnoreabbrev <expr> Q getcmdtype() .. getcmdline() ==# ':Q' ? 'qall' : 'Q']])
 vim.cmd([[cnoreabbrev <expr> QF getcmdtype() .. getcmdline() ==# ':QF' ? 'qall!' : 'QF']])
 
