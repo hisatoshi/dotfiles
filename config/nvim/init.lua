@@ -47,8 +47,11 @@ vim.diagnostic.config({
 -- ColorScheme後のハイライト設定
 vim.api.nvim_create_autocmd("ColorScheme", {
   callback = function()
-    -- Visual mode背景色
     local bg = "#2d5a7a"
+    local float_bg = "#2a2d3e"
+    local border_fg = "#565c64"
+
+    -- Visual mode背景色
     vim.api.nvim_set_hl(0, "Visual", { bg = bg })
     vim.api.nvim_set_hl(0, "Search", { bg = bg })
     vim.api.nvim_set_hl(0, "IncSearch", { bg = bg })
@@ -59,8 +62,8 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     vim.api.nvim_set_hl(0, "TelescopeSelection", { bg = bg })
 
     -- ステータスライン背景色
-    vim.api.nvim_set_hl(0, "StatusLine", { bg = "#2a2d3e" })
-    vim.api.nvim_set_hl(0, "StatusLineNC", { bg = "#2a2d3e" })
+    vim.api.nvim_set_hl(0, "StatusLine", { bg = float_bg })
+    vim.api.nvim_set_hl(0, "StatusLineNC", { bg = float_bg })
 
     -- 診断のundercurl
     vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", { undercurl = true, sp = "#e06c75" })
@@ -69,16 +72,16 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     vim.api.nvim_set_hl(0, "DiagnosticUnderlineHint", { undercurl = true, sp = "#98c379" })
 
     -- float背景（ちらつき防止）
-    vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#2a2d3e" })
-    vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#565c64", bg = "#2a2d3e" })
-    vim.api.nvim_set_hl(0, "NeoTreeNormalFloat", { bg = "#2a2d3e" })
-    vim.api.nvim_set_hl(0, "NeoTreeFloatBorder", { fg = "#565c64", bg = "#2a2d3e" })
-    vim.api.nvim_set_hl(0, "NeoTreeFloatTitle", { fg = "#565c64", bg = "#2a2d3e" })
-    vim.api.nvim_set_hl(0, "TelescopeNormal", { bg = "#2a2d3e" })
-    vim.api.nvim_set_hl(0, "TelescopeBorder", { fg = "#565c64", bg = "#2a2d3e" })
-    vim.api.nvim_set_hl(0, "NotifyBackground", { bg = "#2a2d3e" })
-    vim.api.nvim_set_hl(0, "NoicePopup", { bg = "#2a2d3e" })
-    vim.api.nvim_set_hl(0, "NoicePopupBorder", { fg = "#565c64", bg = "#2a2d3e" })
+    vim.api.nvim_set_hl(0, "NormalFloat", { bg = float_bg })
+    vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_fg, bg = float_bg })
+    vim.api.nvim_set_hl(0, "NeoTreeNormalFloat", { bg = float_bg })
+    vim.api.nvim_set_hl(0, "NeoTreeFloatBorder", { fg = border_fg, bg = float_bg })
+    vim.api.nvim_set_hl(0, "NeoTreeFloatTitle", { fg = border_fg, bg = float_bg })
+    vim.api.nvim_set_hl(0, "TelescopeNormal", { bg = float_bg })
+    vim.api.nvim_set_hl(0, "TelescopeBorder", { fg = border_fg, bg = float_bg })
+    vim.api.nvim_set_hl(0, "NotifyBackground", { bg = float_bg })
+    vim.api.nvim_set_hl(0, "NoicePopup", { bg = float_bg })
+    vim.api.nvim_set_hl(0, "NoicePopupBorder", { fg = border_fg, bg = float_bg })
   end,
 })
 
@@ -152,23 +155,13 @@ vim.api.nvim_create_autocmd("FileType", {
 
 vim.api.nvim_create_autocmd('QuitPre', {
   callback = function()
-    -- 現在のウィンドウ番号を取得
     local current_win = vim.api.nvim_get_current_win()
-    -- すべてのウィンドウをループして調べる
-    for _, win in ipairs(vim.api.nvim_list_wins()) do
-      -- カレント以外を調査
-      if win ~= current_win then
-        local buf = vim.api.nvim_win_get_buf(win)
-        -- buftypeが空文字（通常のバッファ）があればループ終了
-        if vim.bo[buf].buftype == '' then
-          return
-        end
-      end
+    local normal_bufs = vim.tbl_filter(function(win)
+      return win ~= current_win and vim.bo[vim.api.nvim_win_get_buf(win)].buftype == ''
+    end, vim.api.nvim_list_wins())
+    if #normal_bufs == 0 then
+      vim.cmd.only({ bang = true })
     end
-    -- ここまで来たらカレント以外がすべて特殊ウィンドウということなので
-    -- カレント以外をすべて閉じる
-    vim.cmd.only({ bang = true })
-    -- この後、ウィンドウ1つの状態でquitが実行されるので、Vimが終了する
   end,
   desc = 'Close all special buffers and quit Neovim',
 })
@@ -187,7 +180,7 @@ vim.opt.runtimepath:prepend(lazypath)
 ----------------------------------------------------------------------
 --  LSP on_attach
 ----------------------------------------------------------------------
-local on_attach = function(_, _)
+local on_attach = function(client, bufnr)
   map("n", "[d", vim.diagnostic.goto_prev)
   map("n", "]d", vim.diagnostic.goto_next)
   map("n", "K", "<cmd>Lspsaga hover_doc<CR>")
@@ -225,7 +218,6 @@ require("lazy").setup({
   -- アイコン
   {
     "nvim-tree/nvim-web-devicons",
-    lazy = true,
     opts = { color_icons = true, default = true },
   },
 
@@ -411,7 +403,7 @@ require("lazy").setup({
             require("telescope.actions").open_qflist(bufnr)
           end },
         },
-        winblend = 4,
+        winblend = 0,
         prompt_prefix = "   ",
         selection_caret = "  ",
         entry_prefix = "  ",
@@ -437,10 +429,8 @@ require("lazy").setup({
     opts = {
       highlight = { enable = true },
       auto_install = true,
-      parser_install_dir = vim.fn.stdpath("data") .. "/treesitter",
     },
     config = function(_, opts)
-      vim.opt.runtimepath:append(opts.parser_install_dir)
       require("nvim-treesitter.configs").setup(opts)
     end,
   },
@@ -452,19 +442,17 @@ require("lazy").setup({
     opts = {},
   },
 
-  -- インデント可視化
+  -- Git・インデント可視化
+  {
+    "lewis6991/gitsigns.nvim",
+    event = { "BufReadPost", "BufNewFile" },
+    opts = {},
+  },
   {
     "lukas-reineke/indent-blankline.nvim",
     event = { "BufReadPost", "BufNewFile" },
     main = "ibl",
     opts = { scope = { enabled = false } },
-  },
-
-  -- Git
-  {
-    "lewis6991/gitsigns.nvim",
-    event = { "BufReadPost", "BufNewFile" },
-    opts = {},
   },
   {
     "sindrets/diffview.nvim",
