@@ -1,2 +1,9 @@
 state.yml
 packer_compiled.lua
+
+# Secrets / credentials
+gh/hosts.yml
+
+# Auto-generated / environment-specific
+uv/uv-receipt.json
+nvim/lazy-lock.json

@@ -1,0 +1,6 @@
+# Secrets / credentials
+config/gh/hosts.yml
+
+# Auto-generated / environment-specific
+config/uv/uv-receipt.json
+config/nvim/lazy-lock.json
