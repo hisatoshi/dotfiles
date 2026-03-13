@@ -27,7 +27,7 @@ vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.swapfile = false
 vim.opt.laststatus = 0
-vim.opt.cmdheight = 0
+vim.opt.cmdheight = 1
 
 vim.opt.statusline = " "
 vim.opt.fillchars = { stl = "─", stlnc = "─" }
@@ -46,6 +46,7 @@ vim.opt.undofile = true
 vim.opt.undodir = vim.fn.stdpath("data") .. "/undo"
 vim.opt.splitright = true
 vim.opt.splitbelow = true
+vim.opt.shortmess:append("FI")
 
 -- 起動時のちらつき防止（カラースキーム読み込み前に背景色を統一）
 do
@@ -57,6 +58,14 @@ do
   vim.api.nvim_set_hl(0, "StatusLineNC", { fg = bg, bg = bg })
   vim.api.nvim_set_hl(0, "MsgSeparator", { fg = bg, bg = bg })
 end
+
+-- UIの準備完了後にcmdheight=0を適用（起動時のちらつき防止）
+vim.api.nvim_create_autocmd("UIEnter", {
+  once = true,
+  callback = function()
+    vim.opt.cmdheight = 0
+  end,
+})
 
 -- 診断メッセージの表示設定
 vim.diagnostic.config({
@@ -71,46 +80,47 @@ vim.diagnostic.config({
   severity_sort = true,
 })
 
--- ColorScheme後のハイライト設定
-vim.api.nvim_create_autocmd("ColorScheme", {
-  callback = function()
-    local bg = "#2d5a7a"
-    local float_bg = "#2a2d3e"
-    local border_fg = "#565c64"
-
+-- ハイライトオーバーライド（kanagawaのoverridesで適用）
+local hl_overrides = function()
+  local bg = "#2d5a7a"
+  local float_bg = "#2a2d3e"
+  local border_fg = "#565c64"
+  return {
     -- Visual mode背景色
-    vim.api.nvim_set_hl(0, "Visual", { bg = bg })
-    vim.api.nvim_set_hl(0, "Search", { bg = bg })
-    vim.api.nvim_set_hl(0, "IncSearch", { bg = bg })
-    vim.api.nvim_set_hl(0, "CurSearch", { bg = bg })
-    vim.api.nvim_set_hl(0, "CursorLine", { bg = bg })
-    vim.api.nvim_set_hl(0, "TelescopePreviewMatch", { bg = bg })
-    vim.api.nvim_set_hl(0, "TelescopeMatching", { bg = bg })
-    vim.api.nvim_set_hl(0, "TelescopeSelection", { bg = bg })
+    Visual = { bg = bg },
+    Search = { bg = bg },
+    IncSearch = { bg = bg },
+    CurSearch = { bg = bg },
+    CursorLine = { bg = bg },
+    TelescopePreviewMatch = { bg = bg },
+    TelescopeMatching = { bg = bg },
+    TelescopeSelection = { bg = bg },
 
-    -- ステータスライン背景色
-    vim.api.nvim_set_hl(0, "StatusLine", { bg = float_bg })
-    vim.api.nvim_set_hl(0, "StatusLineNC", { bg = float_bg })
+    -- ステータスライン（fg=bgで非表示化、cmdheight=0のちらつき防止）
+    StatusLine = { fg = float_bg, bg = float_bg },
+    StatusLineNC = { fg = float_bg, bg = float_bg },
+    MsgArea = { fg = float_bg, bg = float_bg },
+    MsgSeparator = { fg = float_bg, bg = float_bg },
 
     -- 診断のundercurl
-    vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", { undercurl = true, sp = "#e06c75" })
-    vim.api.nvim_set_hl(0, "DiagnosticUnderlineWarn", { undercurl = true, sp = "#e5c07b" })
-    vim.api.nvim_set_hl(0, "DiagnosticUnderlineInfo", { undercurl = true, sp = "#61afef" })
-    vim.api.nvim_set_hl(0, "DiagnosticUnderlineHint", { undercurl = true, sp = "#98c379" })
+    DiagnosticUnderlineError = { undercurl = true, sp = "#e06c75" },
+    DiagnosticUnderlineWarn = { undercurl = true, sp = "#e5c07b" },
+    DiagnosticUnderlineInfo = { undercurl = true, sp = "#61afef" },
+    DiagnosticUnderlineHint = { undercurl = true, sp = "#98c379" },
 
-    -- float背景（ちらつき防止）
-    vim.api.nvim_set_hl(0, "NormalFloat", { bg = float_bg })
-    vim.api.nvim_set_hl(0, "FloatBorder", { fg = border_fg, bg = float_bg })
-    vim.api.nvim_set_hl(0, "NeoTreeNormalFloat", { bg = float_bg })
-    vim.api.nvim_set_hl(0, "NeoTreeFloatBorder", { fg = border_fg, bg = float_bg })
-    vim.api.nvim_set_hl(0, "NeoTreeFloatTitle", { fg = border_fg, bg = float_bg })
-    vim.api.nvim_set_hl(0, "TelescopeNormal", { bg = float_bg })
-    vim.api.nvim_set_hl(0, "TelescopeBorder", { fg = border_fg, bg = float_bg })
-    vim.api.nvim_set_hl(0, "NotifyBackground", { bg = float_bg })
-    vim.api.nvim_set_hl(0, "NoicePopup", { bg = float_bg })
-    vim.api.nvim_set_hl(0, "NoicePopupBorder", { fg = border_fg, bg = float_bg })
-  end,
-})
+    -- float背景
+    NormalFloat = { bg = float_bg },
+    FloatBorder = { fg = border_fg, bg = float_bg },
+    NeoTreeNormalFloat = { bg = float_bg },
+    NeoTreeFloatBorder = { fg = border_fg, bg = float_bg },
+    NeoTreeFloatTitle = { fg = border_fg, bg = float_bg },
+    TelescopeNormal = { bg = float_bg },
+    TelescopeBorder = { fg = border_fg, bg = float_bg },
+    NotifyBackground = { bg = float_bg },
+    NoicePopup = { bg = float_bg },
+    NoicePopupBorder = { fg = border_fg, bg = float_bg },
+  }
+end
 
 -- クリップボード（lemonade）- xは除外
 if vim.fn.executable("lemonade") == 1 then
@@ -240,6 +250,7 @@ require("lazy").setup({
             },
           },
         },
+        overrides = hl_overrides,
       })
       vim.cmd("colorscheme kanagawa")
     end,
