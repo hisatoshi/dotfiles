@@ -1,10 +1,26 @@
 ----------------------------------------------------------------------
 --  基本設定
 ----------------------------------------------------------------------
+-- モジュールキャッシュ（起動高速化）
+vim.loader.enable()
+
 -- Provider無効化
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
+vim.g.loaded_node_provider = 0
 vim.g.python3_host_prog = vim.fn.expand("~/.python/venv/bin/python")
+
+-- 不要なビルトインプラグイン無効化
+local disabled_builtins = {
+  "netrw", "netrwPlugin", "netrwSettings", "netrwFileHandlers",
+  "gzip", "zip", "zipPlugin", "tar", "tarPlugin",
+  "getscript", "getscriptPlugin", "vimball", "vimballPlugin",
+  "2html_plugin", "tohtml", "tutor", "rplugin",
+  "matchit", "matchparen",
+}
+for _, plugin in ipairs(disabled_builtins) do
+  vim.g["loaded_" .. plugin] = 1
+end
 
 vim.opt.termguicolors = true
 vim.opt.number = true
@@ -191,14 +207,17 @@ vim.opt.runtimepath:prepend(lazypath)
 ----------------------------------------------------------------------
 --  LSP on_attach
 ----------------------------------------------------------------------
-local on_attach = function(client, bufnr)
-  map("n", "[d", vim.diagnostic.goto_prev)
-  map("n", "]d", vim.diagnostic.goto_next)
-  map("n", "K", "<cmd>Lspsaga hover_doc<CR>")
-  map("n", "<space>i", "<cmd>Lspsaga show_line_diagnostics<CR>")
-  map("n", "<space>rn", "<cmd>Lspsaga rename<CR>")
-  map("n", "<space>g", "<cmd>Lspsaga peek_definition<CR>")
-  map("n", "<space>q", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end)
+local on_attach = function(_, bufnr)
+  local buf_map = function(mode, lhs, rhs)
+    map(mode, lhs, rhs, { buffer = bufnr })
+  end
+  buf_map("n", "[d", vim.diagnostic.goto_prev)
+  buf_map("n", "]d", vim.diagnostic.goto_next)
+  buf_map("n", "K", "<cmd>Lspsaga hover_doc<CR>")
+  buf_map("n", "<space>i", "<cmd>Lspsaga show_line_diagnostics<CR>")
+  buf_map("n", "<space>rn", "<cmd>Lspsaga rename<CR>")
+  buf_map("n", "<space>g", "<cmd>Lspsaga peek_definition<CR>")
+  buf_map("n", "<space>q", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end)
 end
 
 ----------------------------------------------------------------------
@@ -402,17 +421,17 @@ require("lazy").setup({
       { "<space>fb", "<cmd>Telescope buffers<CR>" },
     },
     dependencies = "nvim-lua/plenary.nvim",
-    opts = {
+    opts = function()
+      local send_to_qf = function(bufnr)
+        local actions = require("telescope.actions")
+        actions.send_to_qflist(bufnr)
+        actions.open_qflist(bufnr)
+      end
+      return {
       defaults = {
         mappings = {
-          n = { ["<C-f>"] = function(bufnr)
-            require("telescope.actions").send_to_qflist(bufnr)
-            require("telescope.actions").open_qflist(bufnr)
-          end },
-          i = { ["<C-f>"] = function(bufnr)
-            require("telescope.actions").send_to_qflist(bufnr)
-            require("telescope.actions").open_qflist(bufnr)
-          end },
+          n = { ["<C-f>"] = send_to_qf },
+          i = { ["<C-f>"] = send_to_qf },
         },
         winblend = 0,
         prompt_prefix = "   ",
@@ -429,7 +448,8 @@ require("lazy").setup({
           preview_cutoff = 120,
         },
       },
-    },
+    }
+    end,
   },
 
   -- Treesitter
@@ -493,7 +513,7 @@ require("lazy").setup({
   -- Filer
   {
     "nvim-neo-tree/neo-tree.nvim",
-    branch = "v2.x",
+    branch = "v3.x",
     keys = { { "<space>e", "<cmd>Neotree float<CR>" } },
     dependencies = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim" },
     opts = {
@@ -506,7 +526,7 @@ require("lazy").setup({
       window = {
         popup = {
           position = { col = "50%", row = "50%" },
-          size = function(state)
+          size = function()
             return {
               width = math.floor(vim.o.columns * 0.5),
               height = math.floor(vim.o.lines * 0.8),
@@ -518,17 +538,6 @@ require("lazy").setup({
         },
       },
       filesystem = {
-        window = {
-          popup = {
-            position = { col = "50%", row = "50%" },
-            size = function(state)
-              return {
-                width = math.floor(vim.o.columns * 0.5),
-                height = math.floor(vim.o.lines * 0.8),
-              }
-            end,
-          },
-        },
         filtered_items = {
           hide_dotfiles = false,
           hide_gitignored = false,
@@ -537,9 +546,6 @@ require("lazy").setup({
         },
       },
     },
-    config = function(_, opts)
-      require("neo-tree").setup(opts)
-    end,
   },
 
   -- メモ
