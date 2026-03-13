@@ -457,12 +457,8 @@ require("lazy").setup({
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
     event = { "BufReadPost", "BufNewFile" },
-    opts = {
-      highlight = { enable = true },
-      auto_install = true,
-    },
-    config = function(_, opts)
-      require("nvim-treesitter.configs").setup(opts)
+    config = function()
+      vim.treesitter.language.register("bash", "zsh")
     end,
   },
 
