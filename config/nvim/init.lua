@@ -31,6 +31,17 @@ vim.opt.undodir = vim.fn.stdpath("data") .. "/undo"
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
+-- 起動時のちらつき防止（カラースキーム読み込み前に背景色を統一）
+do
+  local bg = "#2a2d3e"
+  vim.api.nvim_set_hl(0, "Normal", { bg = bg })
+  vim.api.nvim_set_hl(0, "NormalNC", { bg = bg })
+  vim.api.nvim_set_hl(0, "MsgArea", { fg = bg, bg = bg })
+  vim.api.nvim_set_hl(0, "StatusLine", { fg = bg, bg = bg })
+  vim.api.nvim_set_hl(0, "StatusLineNC", { fg = bg, bg = bg })
+  vim.api.nvim_set_hl(0, "MsgSeparator", { fg = bg, bg = bg })
+end
+
 -- 診断メッセージの表示設定
 vim.diagnostic.config({
   virtual_text = false,
@@ -61,9 +72,9 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     vim.api.nvim_set_hl(0, "TelescopeMatching", { bg = bg })
     vim.api.nvim_set_hl(0, "TelescopeSelection", { bg = bg })
 
-    -- ステータスライン（cmdheight=0起動時のちらつき防止）
-    vim.api.nvim_set_hl(0, "StatusLine", { fg = float_bg, bg = float_bg })
-    vim.api.nvim_set_hl(0, "StatusLineNC", { fg = float_bg, bg = float_bg })
+    -- ステータスライン背景色
+    vim.api.nvim_set_hl(0, "StatusLine", { bg = float_bg })
+    vim.api.nvim_set_hl(0, "StatusLineNC", { bg = float_bg })
 
     -- 診断のundercurl
     vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", { undercurl = true, sp = "#e06c75" })
