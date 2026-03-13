@@ -22,6 +22,8 @@ for _, plugin in ipairs(disabled_builtins) do
   vim.g["loaded_" .. plugin] = 1
 end
 
+local BG = "#2a2d3e"
+
 vim.opt.termguicolors = true
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -34,7 +36,6 @@ vim.opt.fillchars = { stl = "─", stlnc = "─" }
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
-vim.opt.winblend = 0
 vim.opt.signcolumn = "yes"
 vim.opt.smartcase = true
 vim.opt.ignorecase = true
@@ -50,13 +51,12 @@ vim.opt.shortmess:append("FI")
 
 -- 起動時のちらつき防止（カラースキーム読み込み前に背景色を統一）
 do
-  local bg = "#2a2d3e"
-  vim.api.nvim_set_hl(0, "Normal", { bg = bg })
-  vim.api.nvim_set_hl(0, "NormalNC", { bg = bg })
-  vim.api.nvim_set_hl(0, "MsgArea", { fg = bg, bg = bg })
-  vim.api.nvim_set_hl(0, "StatusLine", { fg = bg, bg = bg })
-  vim.api.nvim_set_hl(0, "StatusLineNC", { fg = bg, bg = bg })
-  vim.api.nvim_set_hl(0, "MsgSeparator", { fg = bg, bg = bg })
+  vim.api.nvim_set_hl(0, "Normal", { bg = BG })
+  vim.api.nvim_set_hl(0, "NormalNC", { bg = BG })
+  vim.api.nvim_set_hl(0, "MsgArea", { fg = BG, bg = BG })
+  vim.api.nvim_set_hl(0, "StatusLine", { fg = BG, bg = BG })
+  vim.api.nvim_set_hl(0, "StatusLineNC", { fg = BG, bg = BG })
+  vim.api.nvim_set_hl(0, "MsgSeparator", { fg = BG, bg = BG })
 end
 
 -- UIの準備完了後にcmdheight=0を適用（起動時のちらつき防止）
@@ -74,53 +74,8 @@ vim.diagnostic.config({
     source = "always",
     border = "rounded",
   },
-  signs = true,
-  underline = true,
-  update_in_insert = false,
   severity_sort = true,
 })
-
--- ハイライトオーバーライド（kanagawaのoverridesで適用）
-local hl_overrides = function()
-  local bg = "#2d5a7a"
-  local float_bg = "#2a2d3e"
-  local border_fg = "#565c64"
-  return {
-    -- Visual mode背景色
-    Visual = { bg = bg },
-    Search = { bg = bg },
-    IncSearch = { bg = bg },
-    CurSearch = { bg = bg },
-    CursorLine = { bg = bg },
-    TelescopePreviewMatch = { bg = bg },
-    TelescopeMatching = { bg = bg },
-    TelescopeSelection = { bg = bg },
-
-    -- ステータスライン（fg=bgで非表示化、cmdheight=0のちらつき防止）
-    StatusLine = { fg = float_bg, bg = float_bg },
-    StatusLineNC = { fg = float_bg, bg = float_bg },
-    MsgArea = { fg = float_bg, bg = float_bg },
-    MsgSeparator = { fg = float_bg, bg = float_bg },
-
-    -- 診断のundercurl
-    DiagnosticUnderlineError = { undercurl = true, sp = "#e06c75" },
-    DiagnosticUnderlineWarn = { undercurl = true, sp = "#e5c07b" },
-    DiagnosticUnderlineInfo = { undercurl = true, sp = "#61afef" },
-    DiagnosticUnderlineHint = { undercurl = true, sp = "#98c379" },
-
-    -- float背景
-    NormalFloat = { bg = float_bg },
-    FloatBorder = { fg = border_fg, bg = float_bg },
-    NeoTreeNormalFloat = { bg = float_bg },
-    NeoTreeFloatBorder = { fg = border_fg, bg = float_bg },
-    NeoTreeFloatTitle = { fg = border_fg, bg = float_bg },
-    TelescopeNormal = { bg = float_bg },
-    TelescopeBorder = { fg = border_fg, bg = float_bg },
-    NotifyBackground = { bg = float_bg },
-    NoicePopup = { bg = float_bg },
-    NoicePopupBorder = { fg = border_fg, bg = float_bg },
-  }
-end
 
 -- クリップボード（lemonade）- xは除外
 if vim.fn.executable("lemonade") == 1 then
@@ -178,15 +133,12 @@ vim.api.nvim_create_autocmd("CursorHold", {
   end,
 })
 
-local filetype_tabstop = { javascript = 2 }
 vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("UserFileTypeConfig", { clear = true }),
-  callback = function(args)
-    local ftts = filetype_tabstop[args.match]
-    if ftts then
-      vim.bo.tabstop = ftts
-      vim.bo.shiftwidth = ftts
-    end
+  pattern = "javascript",
+  callback = function()
+    vim.bo.tabstop = 2
+    vim.bo.shiftwidth = 2
   end,
 })
 
@@ -215,22 +167,6 @@ end
 vim.opt.runtimepath:prepend(lazypath)
 
 ----------------------------------------------------------------------
---  LSP on_attach
-----------------------------------------------------------------------
-local on_attach = function(_, bufnr)
-  local buf_map = function(mode, lhs, rhs)
-    map(mode, lhs, rhs, { buffer = bufnr })
-  end
-  buf_map("n", "[d", vim.diagnostic.goto_prev)
-  buf_map("n", "]d", vim.diagnostic.goto_next)
-  buf_map("n", "K", "<cmd>Lspsaga hover_doc<CR>")
-  buf_map("n", "<space>i", "<cmd>Lspsaga show_line_diagnostics<CR>")
-  buf_map("n", "<space>rn", "<cmd>Lspsaga rename<CR>")
-  buf_map("n", "<space>g", "<cmd>Lspsaga peek_definition<CR>")
-  buf_map("n", "<space>q", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end)
-end
-
-----------------------------------------------------------------------
 --  プラグイン
 ----------------------------------------------------------------------
 require("lazy").setup({
@@ -239,18 +175,52 @@ require("lazy").setup({
     "rebelot/kanagawa.nvim",
     priority = 1000,
     config = function()
+      local sel_bg = "#2d5a7a"
+      local border_fg = "#565c64"
       require("kanagawa").setup({
         colors = {
           theme = {
             all = {
               ui = {
-                bg = "#2a2d3e",
-                bg_gutter = "#2a2d3e",
+                bg = BG,
+                bg_gutter = BG,
               },
             },
           },
         },
-        overrides = hl_overrides,
+        overrides = function()
+          return {
+            Visual = { bg = sel_bg },
+            Search = { bg = sel_bg },
+            IncSearch = { bg = sel_bg },
+            CurSearch = { bg = sel_bg },
+            CursorLine = { bg = sel_bg },
+            TelescopePreviewMatch = { bg = sel_bg },
+            TelescopeMatching = { bg = sel_bg },
+            TelescopeSelection = { bg = sel_bg },
+
+            StatusLine = { fg = BG, bg = BG },
+            StatusLineNC = { fg = BG, bg = BG },
+            MsgArea = { fg = BG, bg = BG },
+            MsgSeparator = { fg = BG, bg = BG },
+
+            DiagnosticUnderlineError = { undercurl = true, sp = "#e06c75" },
+            DiagnosticUnderlineWarn = { undercurl = true, sp = "#e5c07b" },
+            DiagnosticUnderlineInfo = { undercurl = true, sp = "#61afef" },
+            DiagnosticUnderlineHint = { undercurl = true, sp = "#98c379" },
+
+            NormalFloat = { bg = BG },
+            FloatBorder = { fg = border_fg, bg = BG },
+            NeoTreeNormalFloat = { bg = BG },
+            NeoTreeFloatBorder = { fg = border_fg, bg = BG },
+            NeoTreeFloatTitle = { fg = border_fg, bg = BG },
+            TelescopeNormal = { bg = BG },
+            TelescopeBorder = { fg = border_fg, bg = BG },
+            NotifyBackground = { bg = BG },
+            NoicePopup = { bg = BG },
+            NoicePopupBorder = { fg = border_fg, bg = BG },
+          }
+        end,
       })
       vim.cmd("colorscheme kanagawa")
     end,
@@ -293,7 +263,6 @@ require("lazy").setup({
           margin = { horizontal = 0, vertical = 0 },
           placement = { horizontal = "right", vertical = "bottom" },
           padding = 2,
-          options = { winblend = 0 },
         },
         render = function(props)
           local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":.")
@@ -374,10 +343,19 @@ require("lazy").setup({
       }
       vim.lsp.enable("efm")
 
-      -- on_attach設定
+      -- LSPキーマップ（バッファローカル）
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(args)
-          on_attach(nil, args.buf)
+          local buf_map = function(mode, lhs, rhs)
+            map(mode, lhs, rhs, { buffer = args.buf })
+          end
+          buf_map("n", "[d", vim.diagnostic.goto_prev)
+          buf_map("n", "]d", vim.diagnostic.goto_next)
+          buf_map("n", "K", "<cmd>Lspsaga hover_doc<CR>")
+          buf_map("n", "<space>i", "<cmd>Lspsaga show_line_diagnostics<CR>")
+          buf_map("n", "<space>rn", "<cmd>Lspsaga rename<CR>")
+          buf_map("n", "<space>g", "<cmd>Lspsaga peek_definition<CR>")
+          buf_map("n", "<space>q", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end)
         end,
       })
     end,
@@ -439,27 +417,23 @@ require("lazy").setup({
         actions.open_qflist(bufnr)
       end
       return {
-      defaults = {
-        mappings = {
-          n = { ["<C-f>"] = send_to_qf },
-          i = { ["<C-f>"] = send_to_qf },
+        defaults = {
+          mappings = {
+            n = { ["<C-f>"] = send_to_qf },
+            i = { ["<C-f>"] = send_to_qf },
+          },
+          prompt_prefix = "   ",
+          selection_caret = "  ",
+          entry_prefix = "  ",
+          sorting_strategy = "ascending",
+          layout_config = {
+            horizontal = { prompt_position = "top", preview_width = 0.55 },
+            width = 0.87,
+            height = 0.80,
+            preview_cutoff = 120,
+          },
         },
-        winblend = 0,
-        prompt_prefix = "   ",
-        selection_caret = "  ",
-        entry_prefix = "  ",
-        initial_mode = "insert",
-        selection_strategy = "reset",
-        sorting_strategy = "ascending",
-        layout_strategy = "horizontal",
-        layout_config = {
-          horizontal = { prompt_position = "top", preview_width = 0.55 },
-          width = 0.87,
-          height = 0.80,
-          preview_cutoff = 120,
-        },
-      },
-    }
+      }
     end,
   },
 
