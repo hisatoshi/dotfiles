@@ -61,9 +61,9 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     vim.api.nvim_set_hl(0, "TelescopeMatching", { bg = bg })
     vim.api.nvim_set_hl(0, "TelescopeSelection", { bg = bg })
 
-    -- ステータスライン背景色
-    vim.api.nvim_set_hl(0, "StatusLine", { bg = float_bg })
-    vim.api.nvim_set_hl(0, "StatusLineNC", { bg = float_bg })
+    -- ステータスライン（cmdheight=0起動時のちらつき防止）
+    vim.api.nvim_set_hl(0, "StatusLine", { fg = float_bg, bg = float_bg })
+    vim.api.nvim_set_hl(0, "StatusLineNC", { fg = float_bg, bg = float_bg })
 
     -- 診断のundercurl
     vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", { undercurl = true, sp = "#e06c75" })
