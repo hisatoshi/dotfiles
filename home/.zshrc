@@ -1,3 +1,6 @@
+export EDITOR=nvim
+export VISUAL=nvim
+export COLORTERM=truecolor
 export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="/home/zoe/app:$PATH"
