@@ -1,6 +1,16 @@
 # Secrets / credentials
 config/gh/hosts.yml
+config/glab-cli/config.yml
 
 # Auto-generated / environment-specific
 config/uv/uv-receipt.json
 config/nvim/lazy-lock.json
+config/go/telemetry/
+config/wslu/
+
+# Empty / auto-generated directories
+config/cni/
+config/fontconfig/
+config/fontforge/
+config/matplotlib/
+config/efm-langserver/

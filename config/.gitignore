@@ -3,7 +3,17 @@ packer_compiled.lua
 
 # Secrets / credentials
 gh/hosts.yml
+glab-cli/config.yml
 
 # Auto-generated / environment-specific
 uv/uv-receipt.json
 nvim/lazy-lock.json
+go/telemetry/
+wslu/
+
+# Empty / auto-generated directories
+cni/
+fontconfig/
+fontforge/
+matplotlib/
+efm-langserver/
