@@ -3,74 +3,43 @@ set -e
 
 echo "==> Installing external dependencies for Neovim config..."
 
-# curl
-if ! command -v curl &> /dev/null; then
-    echo "Installing curl..."
-    sudo apt-get update && sudo apt-get install -y curl
+# apt パッケージをまとめてインストール
+APT_PACKAGES=()
+
+command -v curl    &>/dev/null || APT_PACKAGES+=(curl)
+command -v unzip   &>/dev/null || APT_PACKAGES+=(unzip)
+command -v python3 &>/dev/null || APT_PACKAGES+=(python3 python3-pip)
+command -v git     &>/dev/null || APT_PACKAGES+=(git)
+command -v rg      &>/dev/null || APT_PACKAGES+=(ripgrep)
+command -v jq      &>/dev/null || APT_PACKAGES+=(jq)
+dpkg -s fd-find &>/dev/null 2>&1 || APT_PACKAGES+=(fd-find)
+command -v lemonade &>/dev/null || APT_PACKAGES+=(lemonade)
+
+if [ ${#APT_PACKAGES[@]} -gt 0 ]; then
+    echo "Installing apt packages: ${APT_PACKAGES[*]}"
+    sudo apt-get update
+    sudo apt-get install -y "${APT_PACKAGES[@]}"
 fi
 
-# unzip
-if ! command -v unzip &> /dev/null; then
-    echo "Installing unzip..."
-    sudo apt-get install -y unzip
+# fd のシンボリックリンク
+if command -v fdfind &>/dev/null && ! command -v fd &>/dev/null; then
+    sudo ln -sf "$(which fdfind)" /usr/local/bin/fd
 fi
 
-# Git (lazy.nvimに必要)
-if ! command -v git &> /dev/null; then
-    echo "Installing git..."
-    sudo apt-get update && sudo apt-get install -y git
-fi
-
-# Node.js & npm (typescript-language-serverに必要)
-if ! command -v node &> /dev/null; then
+# Node.js (typescript-language-server に必要)
+if ! command -v node &>/dev/null; then
     echo "Installing Node.js..."
     curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
     sudo apt-get install -y nodejs
 fi
 
-# ripgrep (Telescope live_grepに必要)
-if ! command -v rg &> /dev/null; then
-    echo "Installing ripgrep..."
-    sudo apt-get install -y ripgrep
-fi
-
-# fd (Telescope find_filesで推奨)
-if ! command -v fd &> /dev/null; then
-    echo "Installing fd..."
-    sudo apt-get install -y fd-find
-    sudo ln -sf $(which fdfind) /usr/local/bin/fd 2>/dev/null || true
-fi
-
-# jq
-if ! command -v jq &> /dev/null; then
-    echo "Installing jq..."
-    sudo apt-get install -y jq
-fi
-
-# lemonade (クリップボード共有)
-if ! command -v lemonade &> /dev/null; then
-    echo "Installing lemonade..."
-    sudo apt-get install -y lemonade
-fi
-
-# win32yank (WSLクリップボード用)
-if [[ $(uname -r) =~ WSL|Microsoft ]]; then
-    if ! command -v win32yank.exe &> /dev/null; then
-        echo "Installing win32yank for WSL..."
-        curl -sLo /tmp/win32yank.zip https://github.com/equalsraf/win32yank/releases/download/v0.1.1/win32yank-x64.zip
-        unzip -p /tmp/win32yank.zip win32yank.exe > /tmp/win32yank.exe
-        chmod +x /tmp/win32yank.exe
-        sudo mv /tmp/win32yank.exe /usr/local/bin/
-    fi
-fi
-
 # uv (Python ツール管理)
-if ! command -v uv &> /dev/null; then
+if ! command -v uv &>/dev/null; then
     echo "Installing uv..."
     curl -LsSf https://astral.sh/uv/install.sh | sh
 fi
 
-# Python ツール（uv tool で隔離インストール、システムPythonを汚さない）
+# Python ツール（uv tool で隔離インストール）
 echo "Installing Python tools via uv tool..."
 uv tool install pyright
 uv tool install ruff
@@ -79,7 +48,4 @@ uv tool install ruff
 echo "Installing TypeScript LSP..."
 sudo npm install -g typescript-language-server
 
-# efm-langserver (json formatter用に残す場合のみ)
-# brew install efm-langserver
-
-echo "==> Done! Launch Neovim to complete plugin installation.
+echo "==> Done! Launch Neovim to complete plugin installation."

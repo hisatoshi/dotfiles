@@ -445,6 +445,10 @@ require("lazy").setup({
     event = { "BufReadPost", "BufNewFile" },
     config = function()
       vim.treesitter.language.register("bash", "zsh")
+      require("nvim-treesitter.configs").setup({
+        ensure_installed = { "regex", "bash", "lua", "python", "javascript", "typescript" },
+        auto_install = true,
+      })
     end,
   },
 
@@ -481,9 +485,16 @@ require("lazy").setup({
       routes = {
         { filter = { event = "msg_show", kind = "", find = "written" }, opts = { skip = true } },
       },
+      lsp = {
+        override = {
+          ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+          ["vim.lsp.util.stylize_markdown"] = true,
+        },
+      },
       presets = {
         command_palette = true,
         long_message_to_split = true,
+        lsp_doc_border = true,
       },
     },
     config = function(_, opts)
@@ -508,12 +519,7 @@ require("lazy").setup({
       window = {
         popup = {
           position = { col = "50%", row = "50%" },
-          size = function()
-            return {
-              width = math.floor(vim.o.columns * 0.5),
-              height = math.floor(vim.o.lines * 0.8),
-            }
-          end,
+          size = { width = "50%", height = "80%" },
         },
         mappings = {
           ["u"] = "navigate_up",
