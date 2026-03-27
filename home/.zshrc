@@ -20,6 +20,9 @@ export PATH=$PATH:$(go env GOPATH)/bin
 # moonbit
 export PATH="$HOME/.moon/bin:$PATH"
 
+#
+bindkey -e
+
 # Plugin Maneger
 eval "$(sheldon source)"
 
