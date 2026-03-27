@@ -8,7 +8,7 @@ vim.loader.enable()
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_node_provider = 0
-vim.g.python3_host_prog = vim.fn.expand("~/.python/venv/bin/python")
+vim.g.loaded_python3_provider = 0
 
 -- 不要なビルトインプラグイン無効化
 local disabled_builtins = {
@@ -299,7 +299,6 @@ require("lazy").setup({
       "glepnir/lspsaga.nvim",
       { "j-hui/fidget.nvim", opts = {} },
       { "kevinhwang91/nvim-bqf", ft = "qf" },
-      "creativenull/efmls-configs-nvim",
     },
     config = function()
       require("lspsaga").setup({
@@ -308,7 +307,7 @@ require("lazy").setup({
         },
       })
 
-      -- Pyright
+      -- Pyright (uv tool install pyright)
       vim.lsp.config.pyright = {
         cmd = { "pyright-langserver", "--stdio" },
         filetypes = { "python" },
@@ -316,6 +315,19 @@ require("lazy").setup({
         settings = { python = { analysis = { typeCheckingMode = "strict" } } },
       }
       vim.lsp.enable("pyright")
+
+      -- Ruff LSP (uv tool install ruff) - flake8 + black の置き換え
+      vim.lsp.config.ruff = {
+        cmd = { "ruff", "server" },
+        filetypes = { "python" },
+        root_markers = { "pyproject.toml", "ruff.toml", ".ruff.toml", ".git" },
+        settings = {
+          ruff = {
+            lineLength = 200,
+          },
+        },
+      }
+      vim.lsp.enable("ruff")
 
       -- TypeScript
       vim.lsp.config.ts_ls = {
@@ -325,27 +337,10 @@ require("lazy").setup({
       }
       vim.lsp.enable("ts_ls")
 
-      -- EFM
-      local fs = require("efmls-configs.fs")
-      local flake8 = require("efmls-configs.linters.flake8")
-      flake8.lintCommand = string.format("%s --max-line-length 200 --ignore=W391,W503 -", fs.executable("flake8"))
-
-      local languages = {
-        python = { flake8, require("efmls-configs.formatters.black") },
-        json = { require("efmls-configs.formatters.jq") },
-      }
-
-      vim.lsp.config.efm = {
-        cmd = { "efm-langserver" },
-        filetypes = vim.tbl_keys(languages),
-        settings = { rootMarkers = { vim.fn.getcwd() }, languages = languages },
-        init_options = { documentFormatting = true, documentRangeFormatting = true },
-      }
-      vim.lsp.enable("efm")
-
       -- LSPキーマップ（バッファローカル）
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(args)
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
           local buf_map = function(mode, lhs, rhs)
             map(mode, lhs, rhs, { buffer = args.buf })
           end
@@ -356,6 +351,12 @@ require("lazy").setup({
           buf_map("n", "<space>rn", "<cmd>Lspsaga rename<CR>")
           buf_map("n", "<space>g", "<cmd>Lspsaga peek_definition<CR>")
           buf_map("n", "<space>q", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end)
+
+          -- ruff が attach したら pyright のホバーを無効化しない代わりに
+          -- pyright 側のフォーマット機能を無効化（ruffに任せる）
+          if client and client.name == "ruff" then
+            client.server_capabilities.hoverProvider = false
+          end
         end,
       })
     end,
