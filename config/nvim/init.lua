@@ -155,6 +155,52 @@ vim.api.nvim_create_autocmd('QuitPre', {
   desc = 'Close all special buffers and quit Neovim',
 })
 ----------------------------------------------------------------------
+--  LSP（ネイティブ API — プラグイン不要）
+----------------------------------------------------------------------
+vim.lsp.config.pyright = {
+  cmd = { "pyright-langserver", "--stdio" },
+  filetypes = { "python" },
+  root_markers = { "pyproject.toml", "setup.py", "requirements.txt", ".git" },
+  settings = { python = { analysis = { typeCheckingMode = "strict" } } },
+}
+
+vim.lsp.config.ruff = {
+  cmd = { "ruff", "server" },
+  filetypes = { "python" },
+  root_markers = { "pyproject.toml", "ruff.toml", ".ruff.toml", ".git" },
+  settings = { ruff = { lineLength = 200 } },
+}
+
+vim.lsp.config.ts_ls = {
+  cmd = { "typescript-language-server", "--stdio" },
+  filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+  root_markers = { "package.json", "tsconfig.json", "jsconfig.json", ".git" },
+}
+
+vim.lsp.enable({ "pyright", "ruff", "ts_ls" })
+
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("UserLspKeymaps", { clear = true }),
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    local buf_map = function(mode, lhs, rhs)
+      map(mode, lhs, rhs, { buffer = args.buf })
+    end
+    buf_map("n", "[d", vim.diagnostic.goto_prev)
+    buf_map("n", "]d", vim.diagnostic.goto_next)
+    buf_map("n", "K", "<cmd>Lspsaga hover_doc<CR>")
+    buf_map("n", "<space>i", "<cmd>Lspsaga show_line_diagnostics<CR>")
+    buf_map("n", "<space>rn", "<cmd>Lspsaga rename<CR>")
+    buf_map("n", "<space>g", "<cmd>Lspsaga peek_definition<CR>")
+    buf_map("n", "<space>q", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end)
+
+    if client and client.name == "ruff" then
+      client.server_capabilities.hoverProvider = false
+    end
+  end,
+})
+
+----------------------------------------------------------------------
 --  lazy.nvim Bootstrap
 ----------------------------------------------------------------------
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -291,76 +337,14 @@ require("lazy").setup({
     end,
   },
 
-  -- LSP
+  -- LSP UI
   {
-    "neovim/nvim-lspconfig",
-    event = { "BufReadPre", "BufNewFile" },
-    dependencies = {
-      "glepnir/lspsaga.nvim",
-      { "j-hui/fidget.nvim", opts = {} },
-      { "kevinhwang91/nvim-bqf", ft = "qf" },
-    },
-    config = function()
-      require("lspsaga").setup({
-        symbol_in_winbar = {
-          enable = false,
-        },
-      })
-
-      -- Pyright (uv tool install pyright)
-      vim.lsp.config.pyright = {
-        cmd = { "pyright-langserver", "--stdio" },
-        filetypes = { "python" },
-        root_markers = { "pyproject.toml", "setup.py", "requirements.txt", ".git" },
-        settings = { python = { analysis = { typeCheckingMode = "strict" } } },
-      }
-      vim.lsp.enable("pyright")
-
-      -- Ruff LSP (uv tool install ruff) - flake8 + black の置き換え
-      vim.lsp.config.ruff = {
-        cmd = { "ruff", "server" },
-        filetypes = { "python" },
-        root_markers = { "pyproject.toml", "ruff.toml", ".ruff.toml", ".git" },
-        settings = {
-          ruff = {
-            lineLength = 200,
-          },
-        },
-      }
-      vim.lsp.enable("ruff")
-
-      -- TypeScript
-      vim.lsp.config.ts_ls = {
-        cmd = { "typescript-language-server", "--stdio" },
-        filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
-        root_markers = { "package.json", "tsconfig.json", "jsconfig.json", ".git" },
-      }
-      vim.lsp.enable("ts_ls")
-
-      -- LSPキーマップ（バッファローカル）
-      vim.api.nvim_create_autocmd("LspAttach", {
-        callback = function(args)
-          local client = vim.lsp.get_client_by_id(args.data.client_id)
-          local buf_map = function(mode, lhs, rhs)
-            map(mode, lhs, rhs, { buffer = args.buf })
-          end
-          buf_map("n", "[d", vim.diagnostic.goto_prev)
-          buf_map("n", "]d", vim.diagnostic.goto_next)
-          buf_map("n", "K", "<cmd>Lspsaga hover_doc<CR>")
-          buf_map("n", "<space>i", "<cmd>Lspsaga show_line_diagnostics<CR>")
-          buf_map("n", "<space>rn", "<cmd>Lspsaga rename<CR>")
-          buf_map("n", "<space>g", "<cmd>Lspsaga peek_definition<CR>")
-          buf_map("n", "<space>q", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end)
-
-          -- ruff が attach したら pyright のホバーを無効化しない代わりに
-          -- pyright 側のフォーマット機能を無効化（ruffに任せる）
-          if client and client.name == "ruff" then
-            client.server_capabilities.hoverProvider = false
-          end
-        end,
-      })
-    end,
+    "glepnir/lspsaga.nvim",
+    event = "LspAttach",
+    opts = { symbol_in_winbar = { enable = false } },
   },
+  { "j-hui/fidget.nvim", event = "LspAttach", opts = {} },
+  { "kevinhwang91/nvim-bqf", ft = "qf" },
 
   -- 補完
   {
@@ -549,6 +533,14 @@ require("lazy").setup({
 
   -- 括弧
   { "cohama/lexima.vim", event = "InsertEnter" },
+
+  -- Markdownレンダリング
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    ft = { "markdown" },
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    opts = {},
+  },
 
   -- リサイズ
   {
