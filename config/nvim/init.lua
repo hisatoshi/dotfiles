@@ -4,6 +4,15 @@
 -- モジュールキャッシュ（起動高速化）
 vim.loader.enable()
 
+-- MoonBit
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = { "*.mbt", "*.mbti" },
+  callback = function()
+    vim.bo.filetype = "moonbit"
+    vim.schedule(function() pcall(vim.treesitter.start) end)
+  end,
+})
+
 -- Provider無効化
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
@@ -177,7 +186,13 @@ vim.lsp.config.ts_ls = {
   root_markers = { "package.json", "tsconfig.json", "jsconfig.json", ".git" },
 }
 
-vim.lsp.enable({ "pyright", "ruff", "ts_ls" })
+vim.lsp.config.moonbit_lsp = {
+  cmd = { "moonbit-lsp" },
+  filetypes = { "moonbit" },
+  root_markers = { "moon.mod.json", ".git" },
+}
+
+vim.lsp.enable({ "pyright", "ruff", "ts_ls", "moonbit_lsp" })
 
 vim.api.nvim_create_autocmd("LspAttach", {
   group = vim.api.nvim_create_augroup("UserLspKeymaps", { clear = true }),
@@ -429,6 +444,17 @@ require("lazy").setup({
     event = { "BufReadPost", "BufNewFile" },
     config = function()
       vim.treesitter.language.register("bash", "zsh")
+
+      local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
+      parser_config.moonbit = {
+        install_info = {
+          url = "https://github.com/moonbitlang/tree-sitter-moonbit",
+          files = { "src/parser.c", "src/scanner.c" },
+          branch = "main",
+        },
+        filetype = "moonbit",
+      }
+
       require("nvim-treesitter.configs").setup({
         ensure_installed = { "regex", "bash", "lua", "python", "javascript", "typescript" },
         auto_install = true,
@@ -531,6 +557,7 @@ require("lazy").setup({
     },
   },
 
+  -- MoonBit
   -- メモ
   { "glidenote/memolist.vim", cmd = { "MemoNew", "MemoList" } },
 
