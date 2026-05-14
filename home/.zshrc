@@ -56,6 +56,36 @@ zj() {
   [ -n "$dir" ] && cd "$dir"
 }
 
+gs() {
+  local branch base
+  # lazygitと同じマージ先: main > master > develop
+  for b in main master develop; do
+    if git show-ref --verify --quiet "refs/heads/$b"; then
+      base="$b"; break
+    fi
+  done
+  base="${base:-HEAD}"
+
+  branch=$( {
+    git branch --merged "$base" | grep -v '^\*' | sed 's/^ *//' | while read -r b; do
+      [[ "$b" == "$base" ]] && continue
+      printf "\033[32m●\t%s\033[0m\n" "$b"
+    done
+    git branch --no-merged "$base" | sed 's/^ *//' | while read -r b; do
+      printf "\033[33m○\t%s\033[0m\n" "$b"
+    done
+    git branch -r | grep -v HEAD | sed 's/^ *origin\///' | while read -r b; do
+      git show-ref --verify --quiet "refs/heads/$b" && continue
+      printf "\033[90m◇\t%s\033[0m\n" "$b"
+    done
+  } | awk -F'\t' '!seen[$2]++' \
+    | fzf --ansi --prompt="switch> " --delimiter='\t' \
+        --preview="git log --color=always --format='%C(auto)%h%d %s %C(dim)%cr' -30 {2} 2>/dev/null || git log --color=always --format='%C(auto)%h%d %s %C(dim)%cr' -30 origin/{2} 2>/dev/null" \
+    | cut -f2) || return
+  [[ -z "$branch" ]] && return
+  git switch "$branch" 2>/dev/null || git switch --create "$branch" "origin/$branch"
+}
+
 # Auto-start tmux on login, attach to existing session if available
 if command -v tmux &>/dev/null && [[ -z "$TMUX" && -z "$VSCODE_PID" ]]; then
   cd ~

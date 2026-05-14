@@ -26,7 +26,7 @@ local disabled_builtins = {
   "netrw", "netrwPlugin", "netrwSettings", "netrwFileHandlers",
   "gzip", "zip", "zipPlugin", "tar", "tarPlugin",
   "getscript", "getscriptPlugin", "vimball", "vimballPlugin",
-  "2html_plugin", "tohtml", "tutor", "rplugin",
+  "2html_plugin", "tutor", "rplugin",
   "matchit", "matchparen",
 }
 for _, plugin in ipairs(disabled_builtins) do
@@ -82,7 +82,7 @@ vim.api.nvim_create_autocmd("UIEnter", {
 vim.diagnostic.config({
   virtual_text = false,
   float = {
-    source = "always",
+    source = true,
     border = "rounded",
   },
   severity_sort = true,
@@ -215,8 +215,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
     local buf_map = function(mode, lhs, rhs)
       map(mode, lhs, rhs, { buffer = args.buf })
     end
-    buf_map("n", "[d", vim.diagnostic.goto_prev)
-    buf_map("n", "]d", vim.diagnostic.goto_next)
+    buf_map("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end)
+    buf_map("n", "]d", function() vim.diagnostic.jump({ count = 1 }) end)
     buf_map("n", "K", "<cmd>Lspsaga hover_doc<CR>")
     buf_map("n", "<leader>i", "<cmd>Lspsaga show_line_diagnostics<CR>")
     buf_map("n", "<leader>rn", "<cmd>Lspsaga rename<CR>")
