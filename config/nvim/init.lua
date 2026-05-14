@@ -472,6 +472,7 @@ require("lazy").setup({
       require("nvim-treesitter.configs").setup({
         ensure_installed = { "regex", "bash", "lua", "python", "javascript", "typescript" },
         auto_install = true,
+        highlight = { enable = true },
       })
     end,
   },
@@ -501,10 +502,12 @@ require("lazy").setup({
     opts = {},
   },
   {
-    "lukas-reineke/indent-blankline.nvim",
+    "shellRaining/hlchunk.nvim",
     event = { "BufReadPost", "BufNewFile" },
-    main = "ibl",
-    opts = { scope = { enabled = false } },
+    opts = {
+      chunk = { enable = true },
+      indent = { enable = true },
+    },
   },
   {
     "sindrets/diffview.nvim",
