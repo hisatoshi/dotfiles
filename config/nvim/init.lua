@@ -4,6 +4,8 @@
 -- モジュールキャッシュ（起動高速化）
 vim.loader.enable()
 
+vim.g.mapleader = " "
+
 -- MoonBit
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   pattern = { "*.mbt", "*.mbti" },
@@ -111,10 +113,10 @@ local map = vim.keymap.set
 -- xだけはクリップボードを使わない（normal modeのみ）
 map("n", "x", '"_x')
 
-map("n", "<space><Left>", "<C-w>h")
-map("n", "<space><Down>", "<C-w>j")
-map("n", "<space><Up>", "<C-w>k")
-map("n", "<space><Right>", "<C-w>l")
+map("n", "<leader><Left>", "<C-w>h")
+map("n", "<leader><Down>", "<C-w>j")
+map("n", "<leader><Up>", "<C-w>k")
+map("n", "<leader><Right>", "<C-w>l")
 map("n", "j", "gj")
 map("n", "k", "gk")
 map("n", "<Down>", "gj")
@@ -148,6 +150,18 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = function()
     vim.bo.tabstop = 2
     vim.bo.shiftwidth = 2
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("MarkdownFormat", { clear = true }),
+  pattern = "markdown",
+  callback = function(args)
+    map("n", "<leader>q", function()
+      local cursor = vim.api.nvim_win_get_cursor(0)
+      vim.cmd("%!prettier --parser markdown")
+      pcall(vim.api.nvim_win_set_cursor, 0, cursor)
+    end, { buffer = args.buf })
   end,
 })
 
@@ -204,10 +218,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
     buf_map("n", "[d", vim.diagnostic.goto_prev)
     buf_map("n", "]d", vim.diagnostic.goto_next)
     buf_map("n", "K", "<cmd>Lspsaga hover_doc<CR>")
-    buf_map("n", "<space>i", "<cmd>Lspsaga show_line_diagnostics<CR>")
-    buf_map("n", "<space>rn", "<cmd>Lspsaga rename<CR>")
-    buf_map("n", "<space>g", "<cmd>Lspsaga peek_definition<CR>")
-    buf_map("n", "<space>q", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end)
+    buf_map("n", "<leader>i", "<cmd>Lspsaga show_line_diagnostics<CR>")
+    buf_map("n", "<leader>rn", "<cmd>Lspsaga rename<CR>")
+    buf_map("n", "<leader>g", "<cmd>Lspsaga peek_definition<CR>")
+    buf_map("n", "<leader>q", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end)
 
     if client and client.name == "ruff" then
       client.server_capabilities.hoverProvider = false
@@ -405,9 +419,9 @@ require("lazy").setup({
     "nvim-telescope/telescope.nvim",
     cmd = "Telescope",
     keys = {
-      { "<space>ff", "<cmd>Telescope find_files<CR>" },
-      { "<space>fw", "<cmd>Telescope live_grep<CR>" },
-      { "<space>fb", "<cmd>Telescope buffers<CR>" },
+      { "<leader>ff", "<cmd>Telescope find_files<CR>" },
+      { "<leader>fw", "<cmd>Telescope live_grep<CR>" },
+      { "<leader>fb", "<cmd>Telescope buffers<CR>" },
     },
     dependencies = "nvim-lua/plenary.nvim",
     opts = function()
@@ -528,7 +542,7 @@ require("lazy").setup({
   {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
-    keys = { { "<space>e", "<cmd>Neotree float<CR>" } },
+    keys = { { "<leader>e", "<cmd>Neotree float<CR>" } },
     dependencies = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim" },
     opts = {
       popup_border_style = "rounded",
@@ -564,7 +578,7 @@ require("lazy").setup({
   -- Trouble
   {
     "folke/trouble.nvim",
-    keys = { { "<space>xx", "<cmd>Trouble diagnostics toggle<CR>" } },
+    keys = { { "<leader>xx", "<cmd>Trouble diagnostics toggle<CR>" } },
     dependencies = "nvim-tree/nvim-web-devicons",
     opts = {},
   },
@@ -574,10 +588,16 @@ require("lazy").setup({
 
   -- Markdownレンダリング
   {
-    "MeanderingProgrammer/render-markdown.nvim",
-    ft = { "markdown" },
-    dependencies = { "nvim-treesitter/nvim-treesitter" },
-    opts = {},
+    "delphinus/md-render.nvim",
+    version = "*",
+    dependencies = {
+      { "nvim-tree/nvim-web-devicons", version = "*" },
+      { "delphinus/budoux.lua", version = "*" },
+    },
+    keys = {
+      { "<leader>mp", "<Plug>(md-render-preview)", desc = "Markdown preview (toggle)" },
+      { "<leader>mt", "<Plug>(md-render-preview-tab)", desc = "Markdown preview in tab (toggle)" },
+    },
   },
 
   -- リサイズ
