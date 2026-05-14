@@ -381,16 +381,13 @@ require("lazy").setup({
     event = "InsertEnter",
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
-      "hrsh7th/cmp-vsnip",
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
-      "hrsh7th/vim-vsnip",
       "onsails/lspkind.nvim",
     },
     config = function()
       local cmp = require("cmp")
       cmp.setup({
-        snippet = { expand = function(args) vim.fn["vsnip#anonymous"](args.body) end },
         mapping = cmp.mapping.preset.insert({
           ["<C-p>"] = cmp.mapping.select_prev_item(),
           ["<C-n>"] = cmp.mapping.select_next_item(),
@@ -399,7 +396,6 @@ require("lazy").setup({
         }),
         sources = {
           { name = "nvim_lsp" },
-          { name = "vsnip" },
           { name = "path" },
           { name = "buffer" },
         },
@@ -509,10 +505,6 @@ require("lazy").setup({
       indent = { enable = true },
     },
   },
-  {
-    "sindrets/diffview.nvim",
-    cmd = { "DiffviewOpen", "DiffviewClose" },
-  },
 
   -- UI拡張
   {
@@ -573,10 +565,6 @@ require("lazy").setup({
       },
     },
   },
-
-  -- MoonBit
-  -- メモ
-  { "glidenote/memolist.vim", cmd = { "MemoNew", "MemoList" } },
 
   -- Trouble
   {
