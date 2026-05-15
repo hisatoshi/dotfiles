@@ -284,6 +284,20 @@ require("lazy").setup({
             DiagnosticUnderlineInfo = { undercurl = true, sp = "#61afef" },
             DiagnosticUnderlineHint = { undercurl = true, sp = "#98c379" },
 
+            -- Markdown見出しカラー
+            ["@markup.heading.1.markdown"] = { fg = "#7aa2f7", bold = true },
+            ["@markup.heading.2.markdown"] = { fg = "#9ece6a", bold = true },
+            ["@markup.heading.3.markdown"] = { fg = "#e0af68", bold = true },
+            ["@markup.heading.4.markdown"] = { fg = "#bb9af7", bold = true },
+            ["@markup.heading.5.markdown"] = { fg = "#7dcfff", bold = true },
+            ["@markup.heading.6.markdown"] = { fg = "#c0caf5", bold = true },
+            ["@markup.raw.markdown_inline"] = { fg = "#f7768e" },
+            ["@markup.raw.block.markdown"] = { fg = "#f7768e" },
+            ["@markup.link.label.markdown_inline"] = { fg = "#7dcfff", underline = true },
+            ["@markup.link.url.markdown_inline"] = { fg = "#565f89" },
+            ["@markup.strong"] = { fg = "#c0caf5", bold = true },
+            ["@markup.italic"] = { fg = "#c0caf5", italic = true },
+
             NormalFloat = { bg = BG },
             FloatBorder = { fg = border_fg, bg = BG },
             NeoTreeNormalFloat = { bg = BG },
@@ -590,6 +604,8 @@ require("lazy").setup({
       { "<leader>mt", "<Plug>(md-render-preview-tab)", desc = "Markdown preview in tab (toggle)" },
     },
   },
+
+
 
   -- リサイズ
   {
