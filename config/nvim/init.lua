@@ -180,6 +180,8 @@ vim.api.nvim_create_autocmd('QuitPre', {
 ----------------------------------------------------------------------
 --  LSP（ネイティブ API — プラグイン不要）
 ----------------------------------------------------------------------
+-- LSP進捗通知を非表示
+vim.lsp.handlers["$/progress"] = function() end
 vim.lsp.config.pyright = {
   cmd = { "pyright-langserver", "--stdio" },
   filetypes = { "python" },
@@ -386,7 +388,7 @@ require("lazy").setup({
     event = "LspAttach",
     opts = { symbol_in_winbar = { enable = false } },
   },
-  { "j-hui/fidget.nvim", event = "LspAttach", opts = {} },
+
   { "kevinhwang91/nvim-bqf", ft = "qf" },
 
   -- 補完
@@ -465,7 +467,7 @@ require("lazy").setup({
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
-    event = { "BufReadPost", "BufNewFile" },
+    lazy = false,
     config = function()
       vim.treesitter.language.register("bash", "zsh")
 
