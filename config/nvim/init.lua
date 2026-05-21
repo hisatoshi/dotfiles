@@ -466,25 +466,18 @@ require("lazy").setup({
   -- Treesitter
   {
     "nvim-treesitter/nvim-treesitter",
+    branch = "main",
     build = ":TSUpdate",
     lazy = false,
     config = function()
       vim.treesitter.language.register("bash", "zsh")
 
-      local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
-      parser_config.moonbit = {
-        install_info = {
-          url = "https://github.com/moonbitlang/tree-sitter-moonbit",
-          files = { "src/parser.c", "src/scanner.c" },
-          branch = "main",
+      require("nvim-treesitter").setup({
+        ensure_installed = {
+          "regex", "bash", "lua", "python", "javascript", "typescript",
+          "markdown", "markdown_inline", "moonbit",
         },
-        filetype = "moonbit",
-      }
-
-      require("nvim-treesitter.configs").setup({
-        ensure_installed = { "regex", "bash", "lua", "python", "javascript", "typescript" },
         auto_install = true,
-        highlight = { enable = true },
       })
     end,
   },
