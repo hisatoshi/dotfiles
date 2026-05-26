@@ -10,6 +10,7 @@ config/wslu/
 
 # Empty / auto-generated directories
 config/cni/
+config/containers/
 config/fontconfig/
 config/fontforge/
 config/matplotlib/
