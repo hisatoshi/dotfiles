@@ -223,7 +223,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
     buf_map("n", "<leader>i", "<cmd>Lspsaga show_line_diagnostics<CR>")
     buf_map("n", "<leader>rn", "<cmd>Lspsaga rename<CR>")
     buf_map("n", "<leader>g", "<cmd>Lspsaga peek_definition<CR>")
-    buf_map("n", "<leader>q", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end)
+    if vim.bo[args.buf].filetype ~= "markdown" then
+      buf_map("n", "<leader>q", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end)
+    end
 
     if client and client.name == "ruff" then
       client.server_capabilities.hoverProvider = false
