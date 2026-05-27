@@ -594,13 +594,30 @@ require("lazy").setup({
       { "nvim-tree/nvim-web-devicons", version = "*" },
       { "delphinus/budoux.lua", version = "*" },
     },
+    ft = "markdown",
     keys = {
       { "<leader>mp", "<Plug>(md-render-preview)", desc = "Markdown preview (toggle)" },
-      { "<leader>mt", "<Plug>(md-render-preview-tab)", desc = "Markdown preview in tab (toggle)" },
+      { "<leader>ms", "<cmd>vert MdRender split<CR>", desc = "Markdown preview in vsplit" },
     },
   },
 
 
+
+  -- Zettelkasten (zk)
+  {
+    "zk-org/zk-nvim",
+    config = function()
+      require("zk").setup({ picker = "telescope" })
+      local map_zk = function(lhs, rhs, desc)
+        map("n", lhs, rhs, { desc = desc })
+      end
+      map_zk("<leader>zn", "<cmd>ZkNew { title = vim.fn.input('Title: ') }<CR>", "New note")
+      map_zk("<leader>zo", "<cmd>ZkNotes { sort = { 'modified' } }<CR>", "Open notes")
+      map_zk("<leader>zt", "<cmd>ZkTags<CR>", "Open notes by tag")
+      map_zk("<leader>zf", "<cmd>ZkNotes { sort = { 'modified' }, match = { vim.fn.input('Search: ') } }<CR>", "Search notes")
+      map("v", "<leader>zf", ":'<,'>ZkMatch<CR>", { desc = "Search notes (selection)" })
+    end,
+  },
 
   -- リサイズ
   {
