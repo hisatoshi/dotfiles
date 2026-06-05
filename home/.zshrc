@@ -30,6 +30,7 @@ eval "$(sheldon source)"
 source ~/.config/zsh/prompt.zsh
 
 # Completion: Prezto-like menu selection
+fpath=(~/.zsh/completion $fpath)
 autoload -Uz compinit && compinit
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'

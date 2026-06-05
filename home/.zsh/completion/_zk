@@ -1,0 +1,196 @@
+#compdef zk
+
+# Zettelkasten (zk) zsh completion file
+# This includes my aliases but you can follow the same pattern to add your own.
+
+# Primary commands and aliases
+local -a commands
+commands=(
+  'init:Create a new notebook in the given directory'
+  'index:Index the notes to be searchable'
+  'new:Create a new note in the given notebook directory'
+  'list:List notes matching the given criteria'
+  'graph:Produce a graph of the notes matching the given criteria'
+  'edit:Edit notes matching the given criteria'
+  'tag:Manage the note tags'
+  # zk aliases
+  'ls:Alias for zk list -t "NOT comment, NOT daily"'
+  'ed:Alias for zk edit -t "NOT comment, NOT daily" --interactive'
+  'n:Alias for zk new'
+  'editlast:Alias for editing the last modified note'
+  'recent:Alias for editing recent notes interactively'
+  'hist:Alias for viewing git history of notes'
+  'conf:Alias for editing the zk config file'
+  'inline:Alias for listing inline paths'
+  'daily:Alias for creating a daily note'
+  'past:Alias for editing past daily notes'
+  'last:Alias for editing the last daily note'
+)
+
+# Global flags available for all commands
+local -a global_opts
+global_opts=(
+  '-h[Show context-sensitive help]'
+  '--help[Show context-sensitive help]'
+  '--notebook-dir=[Notebook directory]:dir:_files'
+  '-W[Run as if zk was started in <PATH> instead of cwd]:dir:_files'
+  '--working-dir=[Run as if zk was started in <PATH> instead of cwd]:dir:_files'
+  '--no-input[Never prompt or ask for confirmation]'
+)
+
+# Main entry
+_arguments \
+  $global_opts \
+  '1:command:->commands' \
+  '*::args:->args'
+
+# Dispatch based on selected command
+case $state in
+  commands)
+    _describe 'zk commands' commands
+    ;;
+
+  args)
+    case $words[2] in
+
+      (init)
+        _arguments \
+          '[1:directory:directory:_files]'
+        ;;
+
+      (index)
+        _arguments \
+          '-f[Force indexing all notes]' \
+          '-v[Print detailed information]' \
+          '-q[Do not print statistics nor progress]'
+        ;;
+
+      (new)
+        _arguments \
+          '-i[Read contents from stdin]' \
+          '-t=[Title of the new note]:title' \
+          '--title=[Title of the new note]:title' \
+          '--date=[Set the current date]:date' \
+          '-g=[Name of the config group]:group' \
+          '--group=[Name of the config group]:group' \
+          '--extra=[Extra variables passed to templates]:key=val' \
+          '--template=[Custom template path]:file:_files' \
+          '-p[Print the path of the created note]' \
+          '-n[Dry run: print content to stdout]' \
+          '--id=[Use provided id]:id' \
+          '[1:directory:directory:_files]'
+        ;;
+
+      (list|ls)
+        _arguments \
+          '[1:paths...:path:_files]' \
+          '-f=[Format]:format:(oneline short medium long full json jsonl)' \
+          '--format=[Format]:format:(oneline short medium long full json jsonl)' \
+          '--header=[Text at start of list]:header' \
+          '--footer=[Text at end of list]:footer' \
+          '-d=[Separator]:delimiter' \
+          '-0[Use ASCII NUL as delimiter]' \
+          '-P[Do not pipe output into a pager]' \
+          '-q[Quiet: no total count]' \
+          '-i[Select interactively with fzf]' \
+          '-n=[Limit number of notes]:limit' \
+          '-m=[Search terms]:match' \
+          '-M=[Matching strategy]:strategy:(fts re exact)' \
+          '-x=[Exclude paths]:exclude' \
+          '-t=[Tags to filter]:tag' \
+          '--mention=[Mention filter]:mention' \
+          '--mentioned-by=[Mentioned-by filter]:mentioned-by' \
+          '-l=[Link-to filter]:link-to' \
+          '--no-link-to=[No link-to filter]:no-link-to' \
+          '-L=[Linked-by filter]:linked-by' \
+          '--no-linked-by=[No linked-by filter]:no-linked-by' \
+          '--orphan[Find notes with no incoming links]' \
+          '--tagless[Find notes with no tags]' \
+          '--related=[Find related notes]:related' \
+          '--max-distance=[Max link distance]:distance' \
+          '-r[Recursive link traversal]' \
+          '--created=[Created on date]:created' \
+          '--created-before=[Created before date]:created-before' \
+          '--created-after=[Created after date]:created-after' \
+          '--modified=[Modified on date]:modified' \
+          '--modified-before=[Modified before date]:modified-before' \
+          '--modified-after=[Modified after date]:modified-after' \
+          '-s=[Sort by criterion]:sort'
+        ;;
+
+      (graph)
+        _arguments \
+          '-f=[Format of graph]:format:(json)' \
+          '--format=[Format of graph]:format:(json)' \
+          '-q[Quiet: no total count]' \
+          '-i[Select interactively with fzf]' \
+          '-n=[Limit number of notes]:limit' \
+          '-m=[Search terms]:match' \
+          '-M=[Matching strategy]:strategy:(fts re exact)' \
+          '-x=[Exclude paths]:exclude' \
+          '-t=[Tags to filter]:tag' \
+          '--mention=[Mention filter]:mention' \
+          '--mentioned-by=[Mentioned-by filter]:mentioned-by' \
+          '-l=[Link-to filter]:link-to' \
+          '--no-link-to=[No link-to filter]:no-link-to' \
+          '-L=[Linked-by filter]:linked-by' \
+          '--no-linked-by=[No linked-by filter]:no-linked-by' \
+          '--orphan' \
+          '--tagless' \
+          '--related=[Find related notes]:related' \
+          '--max-distance=[Max link distance]:distance' \
+          '-r' \
+          '--created' \
+          '--created-before' \
+          '--created-after' \
+          '--modified' \
+          '--modified-before' \
+          '--modified-after' \
+          '-s=[Sort by criterion]:sort' \
+          '[2:paths...:path:_files]'
+        ;;
+
+      (edit|ed)
+        _arguments \
+          '[1:paths...:path:_files]' \
+          '-f[Force: no confirmation]' \
+          '-i[Select interactively with fzf]' \
+          '-n=[Limit number of notes]:limit' \
+          '-m=[Search terms]:match' \
+          '-M=[Matching strategy]:strategy:(fts re exact)' \
+          '-x=[Exclude paths]:exclude' \
+          '-t=[Tags to filter]:tag' \
+          '--mention=[Mention filter]:mention' \
+          '--mentioned-by=[Mentioned-by filter]:mentioned-by' \
+          '-l=[Link-to filter]:link-to' \
+          '--no-link-to=[No link-to filter]:no-link-to' \
+          '-L=[Linked-by filter]:linked-by' \
+          '--no-linked-by=[No linked-by filter]:no-linked-by' \
+          '--orphan' \
+          '--tagless' \
+          '--related=[Find related notes]:related' \
+          '--max-distance=[Max link distance]:distance' \
+          '-r[Recursive link traversal]' \
+          '--created' \
+          '--created-before' \
+          '--created-after' \
+          '--modified' \
+          '--modified-before' \
+          '--modified-after' \
+          '-s=[Sort by criterion]:sort'
+        ;;
+
+      (tag)
+        _arguments '1:tag subcommand:->tagcmds'
+        ;;
+
+    esac
+    ;;
+
+  tagcmds)
+    local -a tagcmds
+    tagcmds=( 'list:List all the note tags' )
+    _describe 'zk tag commands' tagcmds
+    ;;
+
+esac
