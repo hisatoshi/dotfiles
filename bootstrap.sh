@@ -72,6 +72,12 @@ if ! command -v zk &> /dev/null; then
     sudo mv /tmp/zk /usr/local/bin/
 fi
 
+# direnv
+if ! command -v direnv &> /dev/null; then
+    echo "Installing direnv..."
+    sudo apt-get install -y direnv
+fi
+
 # uv (Python ツール管理)
 if ! command -v uv &> /dev/null; then
     echo "Installing uv..."
@@ -86,6 +92,31 @@ uv tool install ruff
 # TypeScript LSP
 echo "Installing TypeScript LSP..."
 sudo npm install -g typescript-language-server
+
+# md2pdf dependencies
+echo "Installing md2pdf dependencies..."
+
+# Mermaid CLI (diagram rendering)
+if ! command -v mmdc &> /dev/null; then
+    echo "Installing @mermaid-js/mermaid-cli..."
+    sudo npm install -g @mermaid-js/mermaid-cli
+fi
+
+# Playwright + Chromium (PDF generation)
+uv tool install playwright
+uv tool run playwright install --with-deps chromium
+
+# Noto Sans CJK JP font
+if ! fc-list | grep -qi "Noto Sans CJK JP"; then
+    echo "Installing Noto Sans CJK JP font..."
+    sudo apt-get install -y fonts-noto-cjk
+fi
+
+# md2pdf
+if ! command -v md2pdf &> /dev/null; then
+    echo "Installing md2pdf..."
+    go install github.com/135yshr/md2pdf/cmd/md2pdf@latest
+fi
 
 # efm-langserver (json formatter用に残す場合のみ)
 # brew install efm-langserver

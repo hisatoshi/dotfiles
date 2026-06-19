@@ -26,6 +26,9 @@ bindkey -e
 # Plugin Maneger
 eval "$(sheldon source)"
 
+# direnv
+eval "$(direnv hook zsh)"
+
 # Sorin-like prompt
 source ~/.config/zsh/prompt.zsh
 

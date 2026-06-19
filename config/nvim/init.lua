@@ -154,6 +154,14 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("JsonFormat", { clear = true }),
+  pattern = "json",
+  callback = function(args)
+    map("n", "<leader>q", ":%!jq .<CR>", { buffer = args.buf })
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("MarkdownFormat", { clear = true }),
   pattern = "markdown",
   callback = function(args)
