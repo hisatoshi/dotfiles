@@ -2,11 +2,17 @@
 config/gh/hosts.yml
 config/glab-cli/config.yml
 
+# VPN credentials
+config/openvpn/
+
 # Auto-generated / environment-specific
 config/uv/uv-receipt.json
 config/nvim/lazy-lock.json
 config/go/telemetry/
 config/wslu/
+config/google-chrome/
+config/herdr/
+config/pulse/
 
 # Empty / auto-generated directories
 config/cni/
