@@ -1,15 +1,52 @@
 ----------------------------------------------------------------------
 --  基本設定
 ----------------------------------------------------------------------
+-- モジュールキャッシュ（起動高速化）
+vim.loader.enable()
+
+vim.g.mapleader = " "
+
+-- MoonBit
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = { "*.mbt", "*.mbti" },
+  callback = function()
+    vim.bo.filetype = "moonbit"
+    vim.schedule(function() pcall(vim.treesitter.start) end)
+  end,
+})
+
+-- Provider無効化
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_node_provider = 0
+vim.g.loaded_python3_provider = 0
+
+-- 不要なビルトインプラグイン無効化
+local disabled_builtins = {
+  "netrw", "netrwPlugin", "netrwSettings", "netrwFileHandlers",
+  "gzip", "zip", "zipPlugin", "tar", "tarPlugin",
+  "getscript", "getscriptPlugin", "vimball", "vimballPlugin",
+  "2html_plugin", "tutor", "rplugin",
+  "matchit", "matchparen",
+}
+for _, plugin in ipairs(disabled_builtins) do
+  vim.g["loaded_" .. plugin] = 1
+end
+
+local BG = "#2a2d3e"
+
 vim.opt.termguicolors = true
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.swapfile = false
-vim.opt.laststatus = 3
+vim.opt.laststatus = 0
+vim.opt.cmdheight = 1
+
+vim.opt.statusline = " "
+vim.opt.fillchars = { stl = "─", stlnc = "─" }
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
-vim.opt.winblend = 5
 vim.opt.signcolumn = "yes"
 vim.opt.smartcase = true
 vim.opt.ignorecase = true
@@ -21,59 +58,187 @@ vim.opt.undofile = true
 vim.opt.undodir = vim.fn.stdpath("data") .. "/undo"
 vim.opt.splitright = true
 vim.opt.splitbelow = true
+vim.opt.shortmess:append("FI")
 
--- Visual mode背景色
-vim.api.nvim_create_autocmd("ColorScheme", {
+-- 起動時のちらつき防止（カラースキーム読み込み前に背景色を統一）
+do
+  vim.api.nvim_set_hl(0, "Normal", { bg = BG })
+  vim.api.nvim_set_hl(0, "NormalNC", { bg = BG })
+  vim.api.nvim_set_hl(0, "MsgArea", { fg = BG, bg = BG })
+  vim.api.nvim_set_hl(0, "StatusLine", { fg = BG, bg = BG })
+  vim.api.nvim_set_hl(0, "StatusLineNC", { fg = BG, bg = BG })
+  vim.api.nvim_set_hl(0, "MsgSeparator", { fg = BG, bg = BG })
+end
+
+-- UIの準備完了後にcmdheight=0を適用（起動時のちらつき防止）
+vim.api.nvim_create_autocmd("UIEnter", {
+  once = true,
   callback = function()
-    local bg = "#2d5a7a"
-    vim.api.nvim_set_hl(0, "Visual", { bg = bg })
-    vim.api.nvim_set_hl(0, "Search", { bg = bg })
-    vim.api.nvim_set_hl(0, "IncSearch", { bg = bg })
-    vim.api.nvim_set_hl(0, "CurSearch", { bg = bg })
-    vim.api.nvim_set_hl(0, "CursorLine", { bg = bg })
-    vim.api.nvim_set_hl(0, "TelescopePreviewMatch", { bg = bg })
-    vim.api.nvim_set_hl(0, "TelescopeMatching", { bg = bg })
-    vim.api.nvim_set_hl(0, "TelescopeSelection", { bg = bg })
+    vim.opt.cmdheight = 0
   end,
 })
 
--- クリップボード（WSL）
-vim.opt.clipboard:prepend({ "unnamedplus" })
-if vim.fn.has("wsl") == 1 then
+-- 診断メッセージの表示設定
+vim.diagnostic.config({
+  virtual_text = false,
+  float = {
+    source = true,
+    border = "rounded",
+  },
+  severity_sort = true,
+})
+
+-- クリップボード（lemonade）- xは除外
+if vim.fn.executable("lemonade") == 1 then
   vim.g.clipboard = {
-    name = "win32yank-wsl",
-    copy = { ["+"] = "win32yank.exe -i", ["*"] = "win32yank.exe -i" },
-    paste = { ["+"] = "win32yank.exe -o", ["*"] = "win32yank.exe -o" },
-    cache_enable = 0,
+    name = "lemonade",
+    copy = {
+      ["+"] = { "lemonade", "copy" },
+      ["*"] = { "lemonade", "copy" },
+    },
+    paste = {
+      ["+"] = { "lemonade", "paste" },
+      ["*"] = { "lemonade", "paste" },
+    },
+    cache_enabled = 0,
   }
 end
+vim.opt.clipboard:prepend({ "unnamedplus" })
 
 ----------------------------------------------------------------------
 --  キーマップ
 ----------------------------------------------------------------------
 local map = vim.keymap.set
-map("n", "<space><Left>", "<C-w>h")
-map("n", "<space><Down>", "<C-w>j")
-map("n", "<space><Up>", "<C-w>k")
-map("n", "<space><Right>", "<C-w>l")
+
+-- xだけはクリップボードを使わない（normal modeのみ）
+map("n", "x", '"_x')
+
+map("n", "<leader><Left>", "<C-w>h")
+map("n", "<leader><Down>", "<C-w>j")
+map("n", "<leader><Up>", "<C-w>k")
+map("n", "<leader><Right>", "<C-w>l")
 map("n", "j", "gj")
 map("n", "k", "gk")
 map("n", "<Down>", "gj")
 map("n", "<Up>", "gk")
 
-vim.cmd([[cnoreabbrev <expr> s getcmdtype() .. getcmdline() ==# ':s' ? [getchar(), ''][1] .. "%s///g<Left><Left>" : 's']])
+vim.cmd([[cnoreabbrev <expr> s getcmdtype() .. getcmdline() ==# ':s' ? [getchar(), ''][1] .. "%s///g<Left><Left><Left>" : 's']])
+vim.cmd([[cnoreabbrev <expr> Q getcmdtype() .. getcmdline() ==# ':Q' ? 'qall' : 'Q']])
+vim.cmd([[cnoreabbrev <expr> QF getcmdtype() .. getcmdline() ==# ':QF' ? 'qall!' : 'QF']])
 
 ----------------------------------------------------------------------
 --  Autocmd
 ----------------------------------------------------------------------
-local filetype_tabstop = { javascript = 2 }
+-- 保存時に行末の空白を削除
+vim.api.nvim_create_autocmd("BufWritePre", {
+  group = vim.api.nvim_create_augroup("TrimWhitespace", { clear = true }),
+  pattern = "*",
+  command = [[%s/\s\+$//e]],
+})
+
+-- カーソル下の診断を自動表示
+vim.api.nvim_create_autocmd("CursorHold", {
+  group = vim.api.nvim_create_augroup("DiagnosticFloat", { clear = true }),
+  callback = function()
+    vim.diagnostic.open_float(nil, { focus = false, scope = "cursor" })
+  end,
+})
+
 vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("UserFileTypeConfig", { clear = true }),
+  pattern = "javascript",
+  callback = function()
+    vim.bo.tabstop = 2
+    vim.bo.shiftwidth = 2
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("JsonFormat", { clear = true }),
+  pattern = "json",
   callback = function(args)
-    local ftts = filetype_tabstop[args.match]
-    if ftts then
-      vim.bo.tabstop = ftts
-      vim.bo.shiftwidth = ftts
+    map("n", "<leader>q", ":%!jq .<CR>", { buffer = args.buf })
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("MarkdownFormat", { clear = true }),
+  pattern = "markdown",
+  callback = function(args)
+    vim.bo.tabstop = 2
+    vim.bo.shiftwidth = 2
+    map("n", "<leader>q", function()
+      local cursor = vim.api.nvim_win_get_cursor(0)
+      vim.cmd("%!prettier --parser markdown")
+      pcall(vim.api.nvim_win_set_cursor, 0, cursor)
+    end, { buffer = args.buf })
+  end,
+})
+
+vim.api.nvim_create_autocmd('QuitPre', {
+  callback = function()
+    local current_win = vim.api.nvim_get_current_win()
+    local normal_bufs = vim.tbl_filter(function(win)
+      return win ~= current_win and vim.bo[vim.api.nvim_win_get_buf(win)].buftype == ''
+    end, vim.api.nvim_list_wins())
+    if #normal_bufs == 0 then
+      vim.cmd.only({ bang = true })
+    end
+  end,
+  desc = 'Close all special buffers and quit Neovim',
+})
+----------------------------------------------------------------------
+--  LSP（ネイティブ API — プラグイン不要）
+----------------------------------------------------------------------
+-- LSP進捗通知を非表示
+vim.lsp.handlers["$/progress"] = function() end
+vim.lsp.config.pyright = {
+  cmd = { "pyright-langserver", "--stdio" },
+  filetypes = { "python" },
+  root_markers = { "pyproject.toml", "setup.py", "requirements.txt", ".git" },
+  settings = { python = { analysis = { typeCheckingMode = "strict" } } },
+}
+
+vim.lsp.config.ruff = {
+  cmd = { "ruff", "server" },
+  filetypes = { "python" },
+  root_markers = { "pyproject.toml", "ruff.toml", ".ruff.toml", ".git" },
+  settings = { ruff = { lineLength = 200 } },
+}
+
+vim.lsp.config.ts_ls = {
+  cmd = { "typescript-language-server", "--stdio" },
+  filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+  root_markers = { "package.json", "tsconfig.json", "jsconfig.json", ".git" },
+}
+
+vim.lsp.config.moonbit_lsp = {
+  cmd = { "moonbit-lsp" },
+  filetypes = { "moonbit" },
+  root_markers = { "moon.mod.json", ".git" },
+}
+
+vim.lsp.enable({ "pyright", "ruff", "ts_ls", "moonbit_lsp" })
+
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("UserLspKeymaps", { clear = true }),
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    local buf_map = function(mode, lhs, rhs)
+      map(mode, lhs, rhs, { buffer = args.buf })
+    end
+    buf_map("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end)
+    buf_map("n", "]d", function() vim.diagnostic.jump({ count = 1 }) end)
+    buf_map("n", "K", "<cmd>Lspsaga hover_doc<CR>")
+    buf_map("n", "<leader>i", "<cmd>Lspsaga show_line_diagnostics<CR>")
+    buf_map("n", "<leader>rn", "<cmd>Lspsaga rename<CR>")
+    buf_map("n", "<leader>g", "<cmd>Lspsaga peek_definition<CR>")
+    if vim.bo[args.buf].filetype ~= "markdown" then
+      buf_map("n", "<leader>q", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end)
+    end
+
+    if client and client.name == "ruff" then
+      client.server_capabilities.hoverProvider = false
     end
   end,
 })
@@ -91,103 +256,152 @@ end
 vim.opt.runtimepath:prepend(lazypath)
 
 ----------------------------------------------------------------------
---  LSP on_attach
-----------------------------------------------------------------------
-local on_attach = function(_, _)
-  map("n", "[d", vim.diagnostic.goto_prev)
-  map("n", "]d", vim.diagnostic.goto_next)
-  map("n", "K", "<cmd>Lspsaga hover_doc<CR>")
-  map("n", "<space>i", "<cmd>Lspsaga show_line_diagnostics<CR>")
-  map("n", "<space>rn", "<cmd>Lspsaga rename<CR>")
-  map("n", "<space>g", "<cmd>Lspsaga peek_definition<CR>")
-  map("n", "<space>q", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end)
-end
-
-----------------------------------------------------------------------
 --  プラグイン
 ----------------------------------------------------------------------
 require("lazy").setup({
   -- テーマ
   {
-    "olimorris/onedarkpro.nvim",
+    "rebelot/kanagawa.nvim",
     priority = 1000,
-    config = function() vim.cmd("colorscheme onedark") end,
+    config = function()
+      local sel_bg = "#2d5a7a"
+      local border_fg = "#565c64"
+      require("kanagawa").setup({
+        colors = {
+          theme = {
+            all = {
+              ui = {
+                bg = BG,
+                bg_gutter = BG,
+              },
+            },
+          },
+        },
+        overrides = function()
+          return {
+            Visual = { bg = sel_bg },
+            Search = { bg = sel_bg },
+            IncSearch = { bg = sel_bg },
+            CurSearch = { bg = sel_bg },
+            CursorLine = { bg = sel_bg },
+            TelescopePreviewMatch = { bg = sel_bg },
+            TelescopeMatching = { bg = sel_bg },
+            TelescopeSelection = { bg = sel_bg },
+
+            StatusLine = { fg = BG, bg = BG },
+            StatusLineNC = { fg = BG, bg = BG },
+            MsgArea = { fg = BG, bg = BG },
+            MsgSeparator = { fg = BG, bg = BG },
+
+            DiagnosticUnderlineError = { undercurl = true, sp = "#e06c75" },
+            DiagnosticUnderlineWarn = { undercurl = true, sp = "#e5c07b" },
+            DiagnosticUnderlineInfo = { undercurl = true, sp = "#61afef" },
+            DiagnosticUnderlineHint = { undercurl = true, sp = "#98c379" },
+
+            -- Markdown見出しカラー
+            ["@markup.heading.1.markdown"] = { fg = "#7aa2f7", bold = true },
+            ["@markup.heading.2.markdown"] = { fg = "#9ece6a", bold = true },
+            ["@markup.heading.3.markdown"] = { fg = "#e0af68", bold = true },
+            ["@markup.heading.4.markdown"] = { fg = "#bb9af7", bold = true },
+            ["@markup.heading.5.markdown"] = { fg = "#7dcfff", bold = true },
+            ["@markup.heading.6.markdown"] = { fg = "#c0caf5", bold = true },
+            ["@markup.raw.markdown_inline"] = { fg = "#f7768e" },
+            ["@markup.raw.block.markdown"] = { fg = "#f7768e" },
+            ["@markup.link.label.markdown_inline"] = { fg = "#7dcfff", underline = true },
+            ["@markup.link.url.markdown_inline"] = { fg = "#565f89" },
+            ["@markup.strong"] = { fg = "#c0caf5", bold = true },
+            ["@markup.italic"] = { fg = "#c0caf5", italic = true },
+
+            NormalFloat = { bg = BG },
+            FloatBorder = { fg = border_fg, bg = BG },
+            NeoTreeNormalFloat = { bg = BG },
+            NeoTreeFloatBorder = { fg = border_fg, bg = BG },
+            NeoTreeFloatTitle = { fg = border_fg, bg = BG },
+            TelescopeNormal = { bg = BG },
+            TelescopeBorder = { fg = border_fg, bg = BG },
+            NotifyBackground = { bg = BG },
+            NoicePopup = { bg = BG },
+            NoicePopupBorder = { fg = border_fg, bg = BG },
+          }
+        end,
+      })
+      vim.cmd("colorscheme kanagawa")
+    end,
   },
 
   -- アイコン
   {
     "nvim-tree/nvim-web-devicons",
-    lazy = true,
     opts = { color_icons = true, default = true },
   },
 
-  -- ステータスライン
+  -- incline.nvim
   {
-    "nvim-lualine/lualine.nvim",
+    "b0o/incline.nvim",
     event = "VeryLazy",
     dependencies = "nvim-tree/nvim-web-devicons",
-    opts = {
-      options = { globalstatus = true, theme = "auto" },
-      sections = { lualine_c = { { "filename", path = 1 } } },
-    },
-  },
-
-  -- LSP
-  {
-    "neovim/nvim-lspconfig",
-    event = { "BufReadPre", "BufNewFile" },
-    dependencies = {
-      "glepnir/lspsaga.nvim",
-      "j-hui/fidget.nvim",
-      "kevinhwang91/nvim-bqf",
-      "creativenull/efmls-configs-nvim",
-    },
     config = function()
-      require("lspsaga").setup()
+      local devicons = require("nvim-web-devicons")
+      local icons = { error = "󰅚 ", warn = "󰀪 ", hint = "󰌶 ", info = " " }
+      local function get_diagnostic_label(props)
+        local label = {}
+        for severity, icon in pairs(icons) do
+          local n = #vim.diagnostic.get(props.buf, { severity = vim.diagnostic.severity[string.upper(severity)] })
+          if n > 0 then
+            table.insert(label, { icon .. n .. " ", group = props.focused and ("DiagnosticSign" .. severity) or "Comment" })
+          end
+        end
+        if #label > 0 then table.insert(label, { "┊ ", guifg = "#5c6370" }) end
+        return label
+      end
 
-      -- Pyright
-      vim.lsp.config.pyright = {
-        cmd = { "pyright-langserver", "--stdio" },
-        filetypes = { "python" },
-        root_markers = { "pyproject.toml", "setup.py", "requirements.txt", ".git" },
-        settings = { python = { analysis = { typeCheckingMode = "strict" } } },
-      }
-      vim.lsp.enable("pyright")
-
-      -- TypeScript
-      vim.lsp.config.ts_ls = {
-        cmd = { "typescript-language-server", "--stdio" },
-        filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
-        root_markers = { "package.json", "tsconfig.json", "jsconfig.json", ".git" },
-      }
-      vim.lsp.enable("ts_ls")
-
-      -- EFM
-      local fs = require("efmls-configs.fs")
-      local flake8 = require("efmls-configs.linters.flake8")
-      flake8.lintCommand = string.format("%s --max-line-length 200 --ignore=W391,W503 -", fs.executable("flake8"))
-
-      local languages = {
-        python = { flake8, require("efmls-configs.formatters.black") },
-        json = { require("efmls-configs.formatters.jq") },
-      }
-
-      vim.lsp.config.efm = {
-        cmd = { "efm-langserver" },
-        filetypes = vim.tbl_keys(languages),
-        settings = { rootMarkers = { vim.fn.getcwd() }, languages = languages },
-        init_options = { documentFormatting = true, documentRangeFormatting = true },
-      }
-      vim.lsp.enable("efm")
-
-      -- on_attach設定
-      vim.api.nvim_create_autocmd("LspAttach", {
-        callback = function(args)
-          on_attach(nil, args.buf)
+      require("incline").setup({
+        highlight = {
+          groups = {
+            InclineNormal = { guibg = "#282c34", guifg = "#abb2bf" },
+            InclineNormalNC = { guibg = "none", guifg = "#5c6370" },
+          },
+        },
+        window = {
+          margin = { horizontal = 0, vertical = 0 },
+          placement = { horizontal = "right", vertical = "bottom" },
+          padding = 2,
+        },
+        render = function(props)
+          local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":.")
+          local ft_icon, ft_color = devicons.get_icon_color(vim.fn.fnamemodify(filename, ":t"))
+          local mode = vim.api.nvim_get_mode().mode
+          local mode_map = {
+            n = { label = "NORMAL", color = "#61afef" },
+            i = { label = "INSERT", color = "#98c379" },
+            v = { label = "VISUAL", color = "#c678dd" },
+            V = { label = "V-LINE", color = "#c678dd" },
+            ["\22"] = { label = "V-BLOCK", color = "#c678dd" },
+            c = { label = "COMMAND", color = "#e5c07b" },
+            R = { label = "REPLACE", color = "#e06c75" },
+          }
+          local mode_info = mode_map[mode] or { label = mode, color = "#abb2bf" }
+          return {
+            { get_diagnostic_label(props) },
+            { (ft_icon or "") .. " ", guifg = ft_color },
+            { filename .. " ", guifg = props.focused and "#abb2bf" or "#5c6370", gui = props.focused and "bold" or "" },
+            { vim.bo[props.buf].modified and "● " or "", guifg = props.focused and "#e5c07b" or "#5c6370" },
+            { "┊ ", guifg = "#5c6370" },
+            { mode_info.label, guifg = props.focused and mode_info.color or "#5c6370", gui = "bold" },
+          }
         end,
       })
     end,
   },
+
+  -- LSP UI
+  {
+    "glepnir/lspsaga.nvim",
+    event = "LspAttach",
+    opts = { symbol_in_winbar = { enable = false } },
+  },
+
+  { "kevinhwang91/nvim-bqf", ft = "qf" },
 
   -- 補完
   {
@@ -195,16 +409,13 @@ require("lazy").setup({
     event = "InsertEnter",
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
-      "hrsh7th/cmp-vsnip",
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
-      "hrsh7th/vim-vsnip",
       "onsails/lspkind.nvim",
     },
     config = function()
       local cmp = require("cmp")
       cmp.setup({
-        snippet = { expand = function(args) vim.fn["vsnip#anonymous"](args.body) end },
         mapping = cmp.mapping.preset.insert({
           ["<C-p>"] = cmp.mapping.select_prev_item(),
           ["<C-n>"] = cmp.mapping.select_next_item(),
@@ -213,7 +424,6 @@ require("lazy").setup({
         }),
         sources = {
           { name = "nvim_lsp" },
-          { name = "vsnip" },
           { name = "path" },
           { name = "buffer" },
         },
@@ -233,55 +443,66 @@ require("lazy").setup({
     "nvim-telescope/telescope.nvim",
     cmd = "Telescope",
     keys = {
-      { "<space>ff", "<cmd>Telescope find_files<CR>" },
-      { "<space>fw", "<cmd>Telescope live_grep<CR>" },
-      { "<space>fb", "<cmd>Telescope buffers<CR>" },
+      { "<leader>ff", "<cmd>Telescope find_files<CR>" },
+      { "<leader>fw", "<cmd>Telescope live_grep<CR>" },
+      { "<leader>fb", "<cmd>Telescope buffers<CR>" },
     },
     dependencies = "nvim-lua/plenary.nvim",
-    opts = {
-      defaults = {
-        mappings = {
-          n = { ["<C-f>"] = function(bufnr)
-            require("telescope.actions").send_to_qflist(bufnr)
-            require("telescope.actions").open_qflist(bufnr)
-          end },
-          i = { ["<C-f>"] = function(bufnr)
-            require("telescope.actions").send_to_qflist(bufnr)
-            require("telescope.actions").open_qflist(bufnr)
-          end },
+    opts = function()
+      local send_to_qf = function(bufnr)
+        local actions = require("telescope.actions")
+        actions.send_to_qflist(bufnr)
+        actions.open_qflist(bufnr)
+      end
+      return {
+        defaults = {
+          mappings = {
+            n = { ["<C-f>"] = send_to_qf },
+            i = { ["<C-f>"] = send_to_qf },
+          },
+          prompt_prefix = "   ",
+          selection_caret = "  ",
+          entry_prefix = "  ",
+          sorting_strategy = "ascending",
+          layout_config = {
+            horizontal = { prompt_position = "top", preview_width = 0.55 },
+            width = 0.87,
+            height = 0.80,
+            preview_cutoff = 120,
+          },
         },
-        winblend = 4,
-        prompt_prefix = "   ",
-        selection_caret = "  ",
-        entry_prefix = "  ",
-        initial_mode = "insert",
-        selection_strategy = "reset",
-        sorting_strategy = "ascending",
-        layout_strategy = "horizontal",
-        layout_config = {
-          horizontal = { prompt_position = "top", preview_width = 0.55 },
-          width = 0.87,
-          height = 0.80,
-          preview_cutoff = 120,
-        },
-      },
-    },
+      }
+    end,
   },
 
   -- Treesitter
   {
     "nvim-treesitter/nvim-treesitter",
+    branch = "main",
     build = ":TSUpdate",
-    event = { "BufReadPost", "BufNewFile" },
-    opts = {
-      highlight = { enable = true },
-      auto_install = true,
-      parser_install_dir = vim.fn.stdpath("data") .. "/treesitter",
-    },
-    config = function(_, opts)
-      vim.opt.runtimepath:append(opts.parser_install_dir)
-      require("nvim-treesitter.configs").setup(opts)
+    lazy = false,
+    config = function()
+      vim.treesitter.language.register("bash", "zsh")
+
+      require("nvim-treesitter").setup({
+        ensure_installed = {
+          "regex", "bash", "lua", "python", "javascript", "typescript",
+          "markdown", "markdown_inline", "moonbit",
+        },
+        auto_install = true,
+      })
     end,
+  },
+
+  -- ジャンプ
+  {
+    "folke/flash.nvim",
+    event = "VeryLazy",
+    keys = {
+      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end },
+      { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end },
+    },
+    opts = {},
   },
 
   -- Surround
@@ -291,23 +512,19 @@ require("lazy").setup({
     opts = {},
   },
 
-  -- インデント可視化
-  {
-    "lukas-reineke/indent-blankline.nvim",
-    event = { "BufReadPost", "BufNewFile" },
-    main = "ibl",
-    opts = { scope = { enabled = false } },
-  },
-
-  -- Git
+  -- Git・インデント可視化
   {
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPost", "BufNewFile" },
     opts = {},
   },
   {
-    "sindrets/diffview.nvim",
-    cmd = { "DiffviewOpen", "DiffviewClose" },
+    "shellRaining/hlchunk.nvim",
+    event = { "BufReadPost", "BufNewFile" },
+    opts = {
+      chunk = { enable = true },
+      indent = { enable = true },
+    },
   },
 
   -- UI拡張
@@ -319,20 +536,46 @@ require("lazy").setup({
       routes = {
         { filter = { event = "msg_show", kind = "", find = "written" }, opts = { skip = true } },
       },
+      lsp = {
+        override = {
+          ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+          ["vim.lsp.util.stylize_markdown"] = true,
+        },
+      },
       presets = {
         command_palette = true,
         long_message_to_split = true,
+        lsp_doc_border = true,
       },
     },
+    config = function(_, opts)
+      require("noice").setup(opts)
+      require("notify").setup({ stages = "static" })
+    end,
   },
 
   -- Filer
   {
     "nvim-neo-tree/neo-tree.nvim",
-    branch = "v2.x",
-    keys = { { "<space>e", "<cmd>Neotree float<CR>" } },
+    branch = "v3.x",
+    keys = { { "<leader>e", "<cmd>Neotree float<CR>" } },
     dependencies = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim" },
     opts = {
+      popup_border_style = "rounded",
+      default_component_configs = {
+        name = {
+          use_git_status_colors = false,
+        },
+      },
+      window = {
+        popup = {
+          position = { col = "50%", row = "50%" },
+          size = { width = "50%", height = "80%" },
+        },
+        mappings = {
+          ["u"] = "navigate_up",
+        },
+      },
       filesystem = {
         filtered_items = {
           hide_dotfiles = false,
@@ -344,25 +587,49 @@ require("lazy").setup({
     },
   },
 
-  -- メモ
-  { "glidenote/memolist.vim", cmd = { "MemoNew", "MemoList" } },
-
   -- Trouble
   {
     "folke/trouble.nvim",
-    keys = { { "<space>xx", "<cmd>Trouble diagnostics toggle<CR>" } },
+    keys = { { "<leader>xx", "<cmd>Trouble diagnostics toggle<CR>" } },
     dependencies = "nvim-tree/nvim-web-devicons",
     opts = {},
   },
 
-  -- LSP Colors
-  { "folke/lsp-colors.nvim", event = "VeryLazy", opts = {} },
-
-  -- スクロールバー
-  { "petertriho/nvim-scrollbar", event = "VeryLazy", opts = {} },
-
   -- 括弧
   { "cohama/lexima.vim", event = "InsertEnter" },
+
+  -- Markdownレンダリング
+  {
+    "delphinus/md-render.nvim",
+    version = "*",
+    dependencies = {
+      { "nvim-tree/nvim-web-devicons", version = "*" },
+      { "delphinus/budoux.lua", version = "*" },
+    },
+    ft = "markdown",
+    keys = {
+      { "<leader>mp", "<Plug>(md-render-preview)", desc = "Markdown preview (toggle)" },
+      { "<leader>ms", "<cmd>vert MdRender split<CR>", desc = "Markdown preview in vsplit" },
+    },
+  },
+
+
+
+  -- Zettelkasten (zk)
+  {
+    "zk-org/zk-nvim",
+    config = function()
+      require("zk").setup({ picker = "telescope" })
+      local map_zk = function(lhs, rhs, desc)
+        map("n", lhs, rhs, { desc = desc })
+      end
+      map_zk("<leader>zn", "<cmd>ZkNew { title = vim.fn.input('Title: ') }<CR>", "New note")
+      map_zk("<leader>zo", "<cmd>ZkNotes { sort = { 'modified' } }<CR>", "Open notes")
+      map_zk("<leader>zt", "<cmd>ZkTags<CR>", "Open notes by tag")
+      map_zk("<leader>zf", "<cmd>ZkNotes { sort = { 'modified' }, match = { vim.fn.input('Search: ') } }<CR>", "Search notes")
+      map("v", "<leader>zf", ":'<,'>ZkMatch<CR>", { desc = "Search notes (selection)" })
+    end,
+  },
 
   -- リサイズ
   {
@@ -372,19 +639,8 @@ require("lazy").setup({
       vim.api.nvim_create_user_command("WinR", "WinResizerStartResize", {})
     end,
   },
-
-  -- Markdown
-  {
-    "OXY2DEV/markview.nvim",
-    ft = { "markdown", "markdown.mdx" },
-    opts = {
-      markdown = { headings = require("markview.presets").headings.slanted },
-    },
-  },
-
-  -- Fidget
-  { "j-hui/fidget.nvim", event = "VeryLazy", opts = {} },
 }, {
-  checker = { enabled = true },
-  change_detection = { enabled = true, notify = false },
+  checker = { enabled = false },
+  change_detection = { enabled = false },
+  rocks = { enabled = false },
 })
