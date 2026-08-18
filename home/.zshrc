@@ -102,3 +102,10 @@ fi
 
 # 環境依存の事後処理の実行
 [[ -f "${HOME}/.zshrc.post.zsh" ]] && builtin source "${HOME}/.zshrc.post.zsh"
+
+# fnm
+FNM_PATH="/home/zoe/.local/share/fnm"
+if [ -d "$FNM_PATH" ]; then
+  export PATH="$FNM_PATH:$PATH"
+  eval "$(fnm env --shell zsh)"
+fi

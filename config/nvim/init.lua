@@ -165,6 +165,8 @@ vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("MarkdownFormat", { clear = true }),
   pattern = "markdown",
   callback = function(args)
+    vim.bo.tabstop = 2
+    vim.bo.shiftwidth = 2
     map("n", "<leader>q", function()
       local cursor = vim.api.nvim_win_get_cursor(0)
       vim.cmd("%!prettier --parser markdown")
