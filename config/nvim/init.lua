@@ -213,7 +213,8 @@ vim.lsp.config.ts_ls = {
 }
 
 vim.lsp.config.moonbit_lsp = {
-  cmd = { "moonbit-lsp" },
+  -- MoonBit ツールチェーンの版によって LSP の実行ファイル名が異なる
+  cmd = { vim.fn.executable("moon-lsp") == 1 and "moon-lsp" or "moonbit-lsp" },
   filetypes = { "moonbit" },
   root_markers = { "moon.mod.json", ".git" },
 }

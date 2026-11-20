@@ -107,5 +107,10 @@ fi
 FNM_PATH="/home/zoe/.local/share/fnm"
 if [ -d "$FNM_PATH" ]; then
   export PATH="$FNM_PATH:$PATH"
+  # WSL では /run/user/$UID が作られないことがあり、fnm が multishell のリンクを作れない
+  if [ -n "$XDG_RUNTIME_DIR" ] && [ ! -d "$XDG_RUNTIME_DIR" ]; then
+    export XDG_RUNTIME_DIR="/tmp/runtime-$UID"
+    mkdir -p -m 700 "$XDG_RUNTIME_DIR"
+  fi
   eval "$(fnm env --shell zsh)"
 fi
