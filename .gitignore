@@ -1,26 +1,28 @@
-# Secrets / credentials
-config/gh/hosts.yml
-config/glab-cli/config.yml
+# ~/.config はこのリポジトリの config/ へのシンボリックリンクなので、
+# アプリの状態・キャッシュ・認証情報も自動的に config/ に書き込まれる。
+# config/ は管理する設定だけを許可リストで追跡する。
+config/*
 
-# VPN credentials
-config/openvpn/
+!config/git/
+!config/glow/
+!config/lazygit/
+!config/nvim/
+!config/sheldon/
+!config/systemd/
+!config/zsh/
+!config/zsh-abbr/
+!config/lemonade.toml
+!config/mimeapps.list
 
-# Auto-generated / environment-specific
-config/uv/uv-receipt.json
+# 認証情報 (hosts.yml / config.yml) と状態ファイルを含むディレクトリは設定ファイルだけ追跡する
+!config/gh/
+config/gh/*
+!config/gh/config.yml
+
+!config/glab-cli/
+config/glab-cli/*
+!config/glab-cli/aliases.yml
+
+# 環境ごとに生成されるもの
 config/nvim/lazy-lock.json
-config/go/telemetry/
-config/wslu/
-config/google-chrome/
-config/herdr/
-config/pulse/
-
-# Empty / auto-generated directories
-config/cni/
-config/containers/
-config/fontconfig/
-config/fontforge/
-config/matplotlib/
-config/efm-langserver/
-
-# Auto-generated completion
 home/.zsh/completion/_cpf
