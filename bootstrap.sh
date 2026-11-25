@@ -7,13 +7,15 @@
 #
 # 何度実行しても同じ状態に収束する (導入済みのものはスキップする)。
 # プロキシ配下では http_proxy / https_proxy を export してから実行する。
-# sudo は -E 付きで呼び、プロキシ環境変数を引き継ぐ。
+# sudo はプロキシ環境変数を名前で指定して引き継ぐ (Ubuntu 25.10 以降の sudo-rs は -E を無視する)。
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 NVIM_VERSION="${NVIM_VERSION:-v0.12.2}"
 ZK_VERSION="${ZK_VERSION:-0.15.4}"
 WIN32YANK_VERSION="${WIN32YANK_VERSION:-v0.1.1}"
+
+SUDO=(sudo "--preserve-env=http_proxy,https_proxy,no_proxy,HTTP_PROXY,HTTPS_PROXY,NO_PROXY")
 
 log()  { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m[warn]\033[0m %s\n' "$*" >&2; }
@@ -28,11 +30,11 @@ apt_install() {
     done
     ((${#missing[@]})) || return 0
     if ((APT_UPDATED == 0)); then
-        sudo -E apt-get update
+        "${SUDO[@]}" apt-get update
         APT_UPDATED=1
     fi
     log "apt install: ${missing[*]}"
-    sudo -E DEBIAN_FRONTEND=noninteractive apt-get install -y "${missing[@]}"
+    "${SUDO[@]}" DEBIAN_FRONTEND=noninteractive apt-get install -y "${missing[@]}"
 }
 
 # 後続のインストールで導入したコマンドをこのシェル内で使えるようにする
@@ -235,11 +237,11 @@ install_zk() {
 install_md2pdf_deps() {
     npm_global @mermaid-js/mermaid-cli mmdc
 
-    # Playwright + Chromium (PDF 生成)。OS 依存ライブラリは sudo -E で入れてプロキシを通す
+    # Playwright + Chromium (PDF 生成)。OS 依存ライブラリは sudo でプロキシを引き継いで入れる
     uv_tool playwright
     if ! compgen -G "$HOME/.cache/ms-playwright/chromium-*" >/dev/null; then
         log "Installing Playwright Chromium..."
-        sudo -E env "PATH=$PATH" playwright install-deps chromium
+        "${SUDO[@]}" env "PATH=$PATH" playwright install-deps chromium
         playwright install chromium
     fi
 
